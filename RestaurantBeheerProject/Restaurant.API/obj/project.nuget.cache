@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "kasFiL4wepjakcTBepPtnQrvBywyu5afR7wdmpY/BPD0pBWXC6jFfH4/0+UhnbsLsbGifHCdr8nCjWYWkeKNKQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\bertd\\Documents\\Hogent 2023-2024\\Sem1\\Web 4\\Eindopdracht\\Eindopdracht_Git_map\\RestaurantBeheer\\RestaurantBeheerProject\\Restaurant.API\\Restaurant.API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\bertd\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.13\\microsoft.aspnetcore.openapi.7.0.13.nupkg.sha512",
+    "C:\\Users\\bertd\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\bertd\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
+    "C:\\Users\\bertd\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "C:\\Users\\bertd\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "C:\\Users\\bertd\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "C:\\Users\\bertd\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
