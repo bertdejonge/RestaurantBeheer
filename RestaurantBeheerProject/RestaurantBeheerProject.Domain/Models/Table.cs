@@ -11,8 +11,6 @@ namespace RestaurantProject.Domain.Models {
 			CollectionPopulator.PopulateDateAndHours(DateToReservationHours);
         }
 
-
-
         private int _tableNumber;
 		public int TableNumber {
 			get { return _tableNumber; }

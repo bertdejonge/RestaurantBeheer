@@ -21,10 +21,10 @@ namespace RestaurantProject.Domain.Models {
             } else {
                 throw new ReservationException("No timeslots available for the given date. Please insert another date.");
             }
+
             StartTime = startTime;
             SetEndTime();
             TableNumber = restaurant.ChooseBestTable(partySize, date, startTime).TableNumber;
-
         }
                 
         // ReservationId will be set once the reservation is inserted into the database

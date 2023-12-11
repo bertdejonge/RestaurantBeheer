@@ -16,9 +16,5 @@ namespace RestaurantProject.Domain.Exceptions
         public TableException(string? message, Exception? innerException) : base(message, innerException)
         {
         }
-
-        protected TableException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

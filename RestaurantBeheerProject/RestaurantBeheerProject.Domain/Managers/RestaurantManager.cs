@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace RestaurantProject.Domain.Managers {
     public class RestaurantManager {
 
-        public List<Restaurant> GetRestaurants(string filter) { 
-            
+        public List<Restaurant> GetRestaurants(string filter) {
+            throw new NotImplementedException();
         }
     }
 }

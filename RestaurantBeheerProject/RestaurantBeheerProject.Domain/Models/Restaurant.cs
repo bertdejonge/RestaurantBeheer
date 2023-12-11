@@ -3,6 +3,7 @@ using RestaurantProject.Domain.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,9 +11,10 @@ namespace RestaurantProject.Domain.Models
 {
     public class Restaurant {
 
-        public Restaurant(string name, Location location, CuisineType cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) {
+        // Constructor with only municipality
+        public Restaurant(string name, string municipality, string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) {
             Name = name;
-            Location = location;
+            Municipality = municipality;
             Cuisine = cuisine;
             Email = email;
             PhoneNumber = phoneNumber;
@@ -20,6 +22,46 @@ namespace RestaurantProject.Domain.Models
             Tables = tables;
         }
 
+        // municipality & zipcode
+        public Restaurant(string name, string municipality, string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables, int zipcode) 
+            :this(name, municipality, cuisine, email, phoneNumber, reservations, tables){
+            Municipality = municipality;
+            Cuisine = cuisine;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Reservations = reservations;
+            Tables = tables;
+            ZipCode = zipcode;
+        }
+
+        // municipality, zipcode & streetname
+        public Restaurant(string name, int zipCode, string municipality, string streetName,  string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) 
+            :this(name, municipality, cuisine, email, phoneNumber, reservations, tables){
+            Name = name;
+            ZipCode = zipCode;
+            Municipality = municipality;
+            StreetName = streetName;
+            Cuisine = cuisine;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Reservations = reservations;
+            Tables = tables;
+        }
+
+        // municipality, zipcode, streetname & housenumberlabel
+        public Restaurant(string name, int zipCode, string municipality, string streetName, string houseNumberLabel, string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) 
+            : this(name, municipality, cuisine, email,phoneNumber,reservations,tables){
+            Name = name;
+            ZipCode = zipCode;
+            Municipality = municipality;
+            StreetName = streetName;
+            HouseNumberLabel = houseNumberLabel;
+            Cuisine = cuisine;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Reservations = reservations;
+            Tables = tables;
+        }      
 
 
         private string _name;
@@ -33,55 +75,94 @@ namespace RestaurantProject.Domain.Models
             }
         }
 
-        private Location _location;
-        public Location Location {
-            get { return _location; }
+        // LOCATION
+        private int _zipCode;
+        public int ZipCode {
+            get { return _zipCode; }
             set {
-                if (value != null) {
-                    _location = value;
+                if (value > 0 && value < 9999) {
+                    _zipCode = value;
                 } else {
-                    throw new RestaurantException("Invalid restaurant. Please give a valid restaurant.");
+                    throw new LocationException("Invalid zip code. Please insert a valid zipcode between 0 and 9999.");
                 }
             }
         }
 
-        private CuisineType _cuisine;
-        public CuisineType Cuisine {
+        
+        private string _municipality;
+        public string Municipality {
+            get { return _municipality; }
+            set {
+                if (!string.IsNullOrWhiteSpace(value)) {
+                    _municipality = value;
+                } else {
+                    throw new LocationException("Invalid municipality. Please insert a valid municipality name.");
+                }
+            }
+        }
+
+        private string _streetName;
+        public string StreetName {
+            get { return _streetName; }
+            set {
+                if (!string.IsNullOrWhiteSpace(value)) {
+                    _streetName = value;
+                } else {
+                    throw new LocationException("Invalid street name");
+                }
+            }
+        }
+
+        private string _houseNumberLabel;
+
+        public string HouseNumberLabel {
+            get { return _houseNumberLabel; }
+            set {
+                if (string.IsNullOrWhiteSpace(value)) { }
+                _houseNumberLabel = value;
+            }
+        }
+
+        private string _cuisine;
+        public string Cuisine {
             get { return _cuisine; }
-            set { _cuisine = value; }
+            set { if (CuisineType.IsInList(value)) {            // Check the type of cuisine a list of options
+                    _cuisine = value;
+                } else {
+                    throw new RestaurantException("No cuisine found. Please give another cuisine");
+                }
+            }
         }
 
         private string _email;
         public string Email {
             get { return _email; }
             set {
-                try {
-                    if (!string.IsNullOrWhiteSpace(value) && CheckProperty.CheckEmail(value)) {
+                if (value.Contains('@')) {
+                    if (CheckProperty.CheckEmail(value)) {
                         _email = value;
                     } else {
-                        throw new UserException(" Please enter an email that contains characters other than whitespace.");
+                        throw new RestaurantException("Invalid email. \"The email address is not in the correct format \\\"john@example.com\\\"\\\"\"");
                     }
-                } catch(Exception ex) {
-                    throw new UserException($"Invalid email. {ex.Message}");
+                }else {
+                    throw new RestaurantException("Invalid email. The email address has to contain an '@'");
                 }
             }
         }
 
         private string _phoneNumber;
+
         public string PhoneNumber {
             get { return _phoneNumber; }
-            set {
-                try {
-                    if (!string.IsNullOrEmpty(value) && CheckProperty.CheckPhoneNumber(value)) {
-                        _phoneNumber = value;
-                    } else {
-                        throw new UserException("Phone number should only contain numbers");
-                    }
-                } catch (Exception ex) {
-                    throw new UserException($"Invalid phone number. {ex.Message}");
+            set { if (CheckProperty.CheckPhoneNumber(value)) {
+                    _phoneNumber = value;
+                } else {
+                    throw new RestaurantException("Invalid phone number. Please enter a phone number that only contains numbers.");
                 }
             }
         }
+
+
 
         public List<Reservation> Reservations { get; set; }
 

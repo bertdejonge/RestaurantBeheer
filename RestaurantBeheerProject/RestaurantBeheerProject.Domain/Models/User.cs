@@ -10,10 +10,9 @@ namespace RestaurantProject.Domain.Models
 {
     public class User {
 
-        public User(string name, string email, string phoneNumber, Location location) {
+        public User(string name, ContactInfo contactInfo, Location location) {
             Name = name;
-            Email = email;
-            PhoneNumber = phoneNumber;
+            ContactInfo = contactInfo;
             Location = location;
         }
 
@@ -29,35 +28,10 @@ namespace RestaurantProject.Domain.Models
 			}
 		}
 
-		private string _email;
-		public string Email {
-			get { return _email; }
-			set {  try {
-					if (!string.IsNullOrWhiteSpace(value) && CheckProperty.CheckEmail(value)) {
-						_email = value;
-					} else {
-						throw new UserException("Please enter an email that contains an @-sign.");
-					}
-				} catch(Exception ex) {
-					throw new UserException($"Invalid email. {ex.Message}");
-				}
-			}
-		}
-
-		private string _phoneNumber;
-		public string PhoneNumber {
-			get { return _phoneNumber; }
-			set {
-				try {
-					if (!string.IsNullOrEmpty(value) && CheckProperty.CheckPhoneNumber(value)) {
-						_phoneNumber = value;
-					} else {
-						throw new UserException("Phone number should only contain numbers");
-					}
-				}catch(Exception ex) {
-					throw new UserException($"Invalid phone number. {ex.Message}");
-				}
-			}
+		private ContactInfo _contactInfo;
+		public ContactInfo ContactInfo {
+			get { return _contactInfo; }
+			set { _contactInfo = value; }
 		}
 
 		private Location _location;
@@ -80,12 +54,6 @@ namespace RestaurantProject.Domain.Models
 
 		// Class diagram code
         public Reservation Reservation {
-            get => default;
-            set {
-            }
-        }
-
-        public Location Location1 {
             get => default;
             set {
             }
