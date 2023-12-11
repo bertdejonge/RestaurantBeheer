@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RestaurantProject.Domain.Exceptions.CheckPropertyException" Collapsed="true">
+    <Position X="1" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\CheckPropertyException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Exceptions.LocationException" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\LocationException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Exceptions.ReservationException" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\ReservationException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Exceptions.RestaurantException" Collapsed="true">
+    <Position X="1" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\RestaurantException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Exceptions.TableException" Collapsed="true">
+    <Position X="2.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\TableException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Exceptions.UserException" Collapsed="true">
+    <Position X="4.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\UserException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Models.Admin" Collapsed="true">
+    <Position X="2.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Admin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Models.Location" Collapsed="true">
+    <Position X="7.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAIAAAAAAABACAAAAAAAAAAAAAAAABAQgAAAAAAAI=</HashCode>
+      <FileName>Models\Location.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Models.Reservation">
+    <Position X="7.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAABAAAAIAABCBAkJAAAAEAIIAAgAIAJAAAAAEAIAAA=</HashCode>
+      <FileName>Models\Reservation.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Restaurant1" />
+      <Property Name="User1" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Models.Restaurant" Collapsed="true">
+    <Position X="4.5" Y="5.5" Width="1.5" />
+    <AssociationLine Name="Reservation" Type="RestaurantProject.Domain.Models.Reservation">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.474" Y="-0.218" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ACABIAAAACAAAAAAEAIASAQgAAAAEAAAACAAAAAAAAE=</HashCode>
+      <FileName>Models\Restaurant.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Table" />
+      <Property Name="Reservation" />
+      <Property Name="Location1" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Models.Table" Collapsed="true">
+    <Position X="2.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAgAgAgAACAAIAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Models\Table.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Models.User" Collapsed="true">
+    <Position X="12.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABIAAAACAAAAAAEAIAQAwAAAAAAAgAACAAAAAAAAE=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Reservation" />
+      <Property Name="Location1" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Util.CheckProperty" Collapsed="true">
+    <Position X="11.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Util\CheckProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RestaurantProject.Domain.Util.CollectionPopulator" Collapsed="true">
+    <Position X="13.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Util\CollectionPopulator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="RestaurantProject.Domain.Util.CuisineType" Collapsed="true">
+    <Position X="11.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAEKAACYAECAAAACQEAEACAAAAAAAAAQAIKAAAQAAEI=</HashCode>
+      <FileName>Util\CuisineType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantProject.Datalayer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Restaurant.API", "Restaurant.API\Restaurant.API.csproj", "{5754D3BA-326E-416C-BC1E-5BC4C5DEF8BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testapp", "Testapp\Testapp.csproj", "{ECC5D02A-DD81-43A0-BE5B-B0F16EF5BD7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testapp", "Testapp\Testapp.csproj", "{ECC5D02A-DD81-43A0-BE5B-B0F16EF5BD7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

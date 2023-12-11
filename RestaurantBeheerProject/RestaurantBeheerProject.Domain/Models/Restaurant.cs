@@ -87,17 +87,49 @@ namespace RestaurantProject.Domain.Models
 
         public List<Table> Tables { get; set; }
 
-        public Table ChooseBestTable(int requiredSeats, TimeOnly reservationTime) {
+        public Table ChooseBestTable(int requiredSeats, DateTime date, TimeOnly reservationTime) {
             // Get the available tables that have enough seats for the party
             // Order them so that the tables with the least ammount of seats come first 
-            List<Table> availableTables = Tables.Where(t => t.Seats >= requiredSeats && t.IsAvailable(reservationTime))
+            List<Table> availableTables = Tables.Where(t => t.Seats >= requiredSeats && t.IsAvailable(date, reservationTime))
                                                 .OrderBy(t => t.Seats).OrderBy(t => t.TableNumber)                                                              
                                                 .ToList();
             if (availableTables.Count > 0) {
-                availableTables[0].RemoveTakenTime(reservationTime);
+                availableTables[0].RemoveTakenTimeForDate(date, reservationTime);
                 return availableTables[0];
             } else {
                 throw new ReservationException("No available tables for the given reservation time. Please try another time "); 
+            }
+        }
+
+        // CHeck if there is any table available for a given date
+        // If any table has an available reservationHour: return true
+        // Else return false
+        public bool IsAnyTableAvailableForDate(DateTime date) {
+            foreach(Table table in Tables) {
+                if (table.DateToReservationHours[date].Count > 0) {
+                    return true;
+                }
+            } return false;
+        }
+
+
+
+        // Class diagram code
+        public Table Table {
+            get => default;
+            set {
+            }
+        }
+
+        public Reservation Reservation {
+            get => default;
+            set {
+            }
+        }
+
+        public Location Location1 {
+            get => default;
+            set {
             }
         }
     }

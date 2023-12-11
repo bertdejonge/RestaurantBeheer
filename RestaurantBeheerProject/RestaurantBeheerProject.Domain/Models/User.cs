@@ -76,5 +76,19 @@ namespace RestaurantProject.Domain.Models
 		        
 
         public List<Reservation> Reservations = new List<Reservation>();
-	}
+
+
+		// Class diagram code
+        public Reservation Reservation {
+            get => default;
+            set {
+            }
+        }
+
+        public Location Location1 {
+            get => default;
+            set {
+            }
+        }
+    }
 }

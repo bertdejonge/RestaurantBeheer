@@ -7,18 +7,26 @@ using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Models {
     public class Reservation {
-
+        // When making a reservation the restaurant and user and partysize get set
+        // Then we check if there is at least one spot available for the given dat
+        // if true, then set the date to that date 
+        // Set the starttime to the desired timeslot date
+        // Finally, choose the best table for a given partysize, date and starttime 
         public Reservation(Restaurant restaurant, User user, int partySize, DateTime date, TimeOnly startTime) {
             Restaurant = restaurant;            
             User = user;
             PartySize = partySize;
-            Date = date;
+            if(restaurant.IsAnyTableAvailableForDate(date)) {
+                Date = date;
+            } else {
+                throw new ReservationException("No timeslots available for the given date. Please insert another date.");
+            }
             StartTime = startTime;
             SetEndTime();
-            TableNumber = restaurant.ChooseBestTable(partySize, startTime).TableNumber;
+            TableNumber = restaurant.ChooseBestTable(partySize, date, startTime).TableNumber;
 
         }
-
+                
         // ReservationId will be set once the reservation is inserted into the database
         public int ReservationId { get; private set; }
 
@@ -103,6 +111,18 @@ namespace RestaurantProject.Domain.Models {
 
         public override string? ToString() {
             return $"Reservation at {StartTime} for table No.{TableNumber}";
+        }
+
+        public Restaurant Restaurant1 {
+            get => default;
+            set {
+            }
+        }
+
+        public User User1 {
+            get => default;
+            set {
+            }
         }
     }
 }
