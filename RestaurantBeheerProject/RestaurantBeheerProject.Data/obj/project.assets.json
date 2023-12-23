@@ -1053,6 +1053,16 @@
             "rid": "win"
           }
         }
+      },
+      "RestaurantProject.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "compile": {
+          "bin/placeholder/RestaurantProject.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RestaurantProject.Domain.dll": {}
+        }
       }
     }
   },
@@ -2875,12 +2885,18 @@
         "system.windows.extensions.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "RestaurantProject.Domain/1.0.0": {
+      "type": "project",
+      "path": "../RestaurantBeheerProject.Domain/RestaurantProject.Domain.csproj",
+      "msbuildProject": "../RestaurantBeheerProject.Domain/RestaurantProject.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net7.0": [
       "Microsoft.EntityFrameworkCore.SqlServer >= 7.0.14",
-      "Microsoft.EntityFrameworkCore.Tools >= 7.0.14"
+      "Microsoft.EntityFrameworkCore.Tools >= 7.0.14",
+      "RestaurantProject.Domain >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2915,7 +2931,11 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\bertd\\Documents\\Hogent 2023-2024\\Sem1\\Web 4\\Eindopdracht\\Eindopdracht_Git_map\\RestaurantBeheer\\RestaurantBeheerProject\\RestaurantBeheerProject.Domain\\RestaurantProject.Domain.csproj": {
+              "projectPath": "C:\\Users\\bertd\\Documents\\Hogent 2023-2024\\Sem1\\Web 4\\Eindopdracht\\Eindopdracht_Git_map\\RestaurantBeheer\\RestaurantBeheerProject\\RestaurantBeheerProject.Domain\\RestaurantProject.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

@@ -7,25 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantProject.Datalayer.Models {
-    public class Reservation {
+    public class TableEF {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ReservationID { get; set; }
-
-        public Restaurant Restaurant { get; set; }
-
-        public User User { get; set; }
+        public int TableID { get; set; }
 
         [Required]
-        public int PartySize { get; set; }
-
-        [Required]
-        public DateTime Date { get; set; }
-
-        [Required]
-        public TimeSpan StartTime { get; set; }
-
         public int TableNumber { get; set; }
-    }
 
+        [Required]
+        public int Seats {  get; set; }
+
+        [ForeignKey("RestaurantID")]
+        public RestaurantEF Restaurant { get; set; }
+
+    }
 }

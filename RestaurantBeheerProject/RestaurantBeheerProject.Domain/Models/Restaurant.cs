@@ -12,56 +12,67 @@ namespace RestaurantProject.Domain.Models
     public class Restaurant {
 
         // Constructor with only municipality
-        public Restaurant(string name, string municipality, string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) {
+        public Restaurant(string name, string municipality, int zipCode, string cuisine, string email, string phoneNumber, List<Table> tables) {
             Name = name;
             Municipality = municipality;
-            Cuisine = cuisine;
-            Email = email;
-            PhoneNumber = phoneNumber;
-            Reservations = reservations;
-            Tables = tables;
-        }
-
-        // municipality & zipcode
-        public Restaurant(string name, string municipality, string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables, int zipcode) 
-            :this(name, municipality, cuisine, email, phoneNumber, reservations, tables){
-            Municipality = municipality;
-            Cuisine = cuisine;
-            Email = email;
-            PhoneNumber = phoneNumber;
-            Reservations = reservations;
-            Tables = tables;
-            ZipCode = zipcode;
-        }
-
-        // municipality, zipcode & streetname
-        public Restaurant(string name, int zipCode, string municipality, string streetName,  string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) 
-            :this(name, municipality, cuisine, email, phoneNumber, reservations, tables){
-            Name = name;
             ZipCode = zipCode;
+            Cuisine = cuisine;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Tables = tables;
+        }
+
+        // + streetname
+        public Restaurant(string name, string municipality, int zipCode, string cuisine, string email, string phoneNumber, List<Table> tables, string streetName) 
+            :this(name, municipality, zipCode, cuisine, email, phoneNumber, tables){
+            Name = name;
             Municipality = municipality;
+            ZipCode = zipCode;
+            Cuisine = cuisine;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Tables = tables;
             StreetName = streetName;
+        }
+
+        // +  housenumberlabel
+        public Restaurant(string name, string municipality, int zipCode, string cuisine, string email, string phoneNumber, List<Table> tables, string streetName, string houseNumberLabel) 
+            : this(name, municipality, zipCode, cuisine, email, phoneNumber, tables, streetName){
+            Name = name;
+            Municipality = municipality;
+            ZipCode = zipCode;
             Cuisine = cuisine;
             Email = email;
             PhoneNumber = phoneNumber;
-            Reservations = reservations;
-            Tables = tables;
-        }
-
-        // municipality, zipcode, streetname & housenumberlabel
-        public Restaurant(string name, int zipCode, string municipality, string streetName, string houseNumberLabel, string cuisine, string email, string phoneNumber, List<Reservation> reservations, List<Table> tables) 
-            : this(name, municipality, cuisine, email,phoneNumber,reservations,tables){
-            Name = name;
-            ZipCode = zipCode;
-            Municipality = municipality;
+            Tables = tables;            
             StreetName = streetName;
             HouseNumberLabel = houseNumberLabel;
+        }
+
+        // + ID
+        public Restaurant(string name, string municipality, string cuisine, string email, string phoneNumber, List<Table> tables, int zipCode, string streetName, string houseNumberLabel, int id)
+            : this(name, municipality, zipCode, cuisine, email, phoneNumber, tables, streetName, houseNumberLabel) {
+            Name = name;
+            Municipality = municipality;
+            ZipCode = zipCode;
             Cuisine = cuisine;
             Email = email;
             PhoneNumber = phoneNumber;
-            Reservations = reservations;
             Tables = tables;
-        }      
+            StreetName = streetName;
+            HouseNumberLabel = houseNumberLabel;
+            RestaurantID = id;
+        }
+
+        private int _restaurantID;
+        public int RestaurantID {
+            get { return _restaurantID; }
+            set {
+                if (value > 0) {
+                    _restaurantID = value;
+                }
+            }
+        }
 
 
         private string _name;
@@ -83,7 +94,7 @@ namespace RestaurantProject.Domain.Models
                 if (value > 0 && value < 9999) {
                     _zipCode = value;
                 } else {
-                    throw new LocationException("Invalid zip code. Please insert a valid zipcode between 0 and 9999.");
+                    throw new RestaurantException("Invalid zip code. Please insert a valid zipcode between 0 and 9999.");
                 }
             }
         }
@@ -96,7 +107,7 @@ namespace RestaurantProject.Domain.Models
                 if (!string.IsNullOrWhiteSpace(value)) {
                     _municipality = value;
                 } else {
-                    throw new LocationException("Invalid municipality. Please insert a valid municipality name.");
+                    throw new RestaurantException("Invalid municipality. Please insert a valid municipality name.");
                 }
             }
         }
@@ -108,7 +119,7 @@ namespace RestaurantProject.Domain.Models
                 if (!string.IsNullOrWhiteSpace(value)) {
                     _streetName = value;
                 } else {
-                    throw new LocationException("Invalid street name");
+                    throw new RestaurantException("Invalid street name");
                 }
             }
         }
@@ -161,17 +172,14 @@ namespace RestaurantProject.Domain.Models
                 }
             }
         }
-
-
-
-        public List<Reservation> Reservations { get; set; }
+        
 
         public List<Table> Tables { get; set; }
 
-        public Table ChooseBestTable(int requiredSeats, DateTime date, TimeOnly reservationTime) {
+        public Table ChooseBestTable(int requiredSeats, DateOnly date, TimeOnly reservationTime) {
             // Get the available tables that have enough seats for the party
             // Order them so that the tables with the least ammount of seats come first 
-            List<Table> availableTables = Tables.Where(t => t.Seats >= requiredSeats && t.IsAvailable(date, reservationTime))
+            List<Table> availableTables = Tables.Where(t => t.Seats >= requiredSeats && t.IsAvailableForStartTime(date, reservationTime))
                                                 .OrderBy(t => t.Seats).OrderBy(t => t.TableNumber)                                                              
                                                 .ToList();
             if (availableTables.Count > 0) {
@@ -185,30 +193,22 @@ namespace RestaurantProject.Domain.Models
         // CHeck if there is any table available for a given date
         // If any table has an available reservationHour: return true
         // Else return false
-        public bool IsAnyTableAvailableForDate(DateTime date) {
-            foreach(Table table in Tables) {
+        public bool IsAnyTableAvailableForDate(DateOnly date, int partySize) {
+            foreach(Table table in Tables.Where(t => t.Seats >= partySize)) {
                 if (table.DateToReservationHours[date].Count > 0) {
                     return true;
                 }
             } return false;
+        }       
+
+        public override string? ToString() {
+            return $"{Name}, {Cuisine}, at {ZipCode})";
         }
 
 
 
         // Class diagram code
         public Table Table {
-            get => default;
-            set {
-            }
-        }
-
-        public Reservation Reservation {
-            get => default;
-            set {
-            }
-        }
-
-        public Location Location1 {
             get => default;
             set {
             }

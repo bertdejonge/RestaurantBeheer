@@ -11,7 +11,21 @@ namespace RestaurantProject.Domain.Models {
 			CollectionPopulator.PopulateDateAndHours(DateToReservationHours);
         }
 
-        private int _tableNumber;
+		private int _tableID;
+
+		public int TableID {
+			get { return _tableID; }
+			set {
+				if (value > 0) {
+					_tableID = value;
+				} else {
+                    throw new TableException("Invalid TableID. Please insert a number bigger than 0.");
+                }
+			}
+		}
+
+
+		private int _tableNumber;
 		public int TableNumber {
 			get { return _tableNumber; }
 			set {
@@ -36,30 +50,30 @@ namespace RestaurantProject.Domain.Models {
 			}
 		}
 
-		public Dictionary<DateTime, List<TimeOnly>> DateToReservationHours = new Dictionary<DateTime, List<TimeOnly>>();
+		public Dictionary<DateOnly, List<TimeOnly>> DateToReservationHours = new Dictionary<DateOnly, List<TimeOnly>>();
 
 
 		// Check if the given reservation time is still available
 		// If it is still available, remove it from the list to avoid double bookings
 		// Furthermore, remove the available slots so that the table is reserved for 1,5 hours
-        public bool IsAvailable(DateTime date, TimeOnly reservationTime) {
-			if(reservationTime <= new TimeOnly(22,0) ||  reservationTime >= new TimeOnly(17, 30)) {
-                if (DateToReservationHours.TryGetValue(date, out List<TimeOnly> availableHours)) {
-                    if(availableHours.Contains(reservationTime)) {
-                        RemoveTakenTimeForDate(date, reservationTime);
+		public bool IsAvailableForStartTime(DateOnly date, TimeOnly reservationTime) {
+			if (reservationTime <= new TimeOnly(22, 0) || reservationTime >= new TimeOnly(17, 30)) {
+				if (DateToReservationHours.TryGetValue(date, out List<TimeOnly> availableHours)) {
+					if (availableHours.Contains(reservationTime)) {
+						RemoveTakenTimeForDate(date, reservationTime);
 						return true;
-                    } else {
+					} else {
 						return false;
 					}
-                } else {
-                    return false;     
-                }
-            } else {
+				} else {
+					return false;
+				}
+			} else {
 				throw new TableException("Invalid reservation time.");
-			}			
+			}
 		}
 
-		public void RemoveTakenTimeForDate(DateTime date, TimeOnly reservationTime) {
+		public void RemoveTakenTimeForDate(DateOnly date, TimeOnly reservationTime) {
 
 			// Remove the time from the list to avoid double bookings
 			DateToReservationHours[date].Remove(reservationTime);
@@ -70,6 +84,10 @@ namespace RestaurantProject.Domain.Models {
                 DateToReservationHours[date].Remove(reservationTime);
 
             }
+        }
+
+        internal bool IsAvailable(DateOnly date, TimeOnly reservationTime) {
+            throw new NotImplementedException();
         }
     }
 }

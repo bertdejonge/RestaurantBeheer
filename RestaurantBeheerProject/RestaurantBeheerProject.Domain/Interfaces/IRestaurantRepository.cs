@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Interfaces {
     public interface IRestaurantRepository {
-        void CreateRestaurant(Restaurant restaurant);
+        Task CreateRestaurantAsync(Restaurant restaurant);
 
-        Restaurant GetRestaurant(int id);
+        Task<Restaurant> GetRestaurantByIdAsync(int id);
 
         // Get restaurants by certain date
-        List<Restaurant> GetAvailableRestaurantsForDate(DateTime date, int partySize);
+        Task<List<Restaurant>> GetAvailableRestaurantsForDateAsync(DateOnly date, int partySize);
 
         // Search by zipcode OR cuisine OR zipcode and cuisine
-        List<Restaurant> GetRestaurantsByZipAndCuisine(int? zipcode = null, string? cuisine = null);
+        Task<List<Restaurant>> GetRestaurantsByZipAndCuisineAsync(int? zipcode = null, string? cuisine = null);
 
-        void UpdateRestaurant(int restaurantID, Restaurant updatedRestaurant);
+        Task UpdateRestaurantAsync(Restaurant updatedRestaurant);
 
-        void RemoveRestaurant(int restaurantID);
+        Task RemoveRestaurantAsync(int restaurantID);
     }
 }

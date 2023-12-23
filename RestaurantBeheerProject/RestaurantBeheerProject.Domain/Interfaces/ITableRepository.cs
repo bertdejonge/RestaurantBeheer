@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Interfaces {
     public interface ITableRepository {
-        void CreateTable(Table table);
-        void GetTable(int tableID);
+        Task<Table> GetTable(int tableID);
+        void CreateTable(Table table);        
         void UpdateTable(int tableID, Table updatedTable);
         void DeleteTable(int tableID);
     }

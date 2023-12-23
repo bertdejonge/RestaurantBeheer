@@ -12,19 +12,13 @@ namespace RestaurantProject.Domain.Models {
         // if true, then set the date to that date 
         // Set the starttime to the desired timeslot date
         // Finally, choose the best table for a given partysize, date and starttime 
-        public Reservation(Restaurant restaurant, User user, int partySize, DateTime date, TimeOnly startTime) {
-            Restaurant = restaurant;            
+        public Reservation(Restaurant restaurant, User user, int partySize, DateOnly date, TimeOnly startTime) {
+            Restaurant = restaurant;
             User = user;
             PartySize = partySize;
-            if(restaurant.IsAnyTableAvailableForDate(date)) {
-                Date = date;
-            } else {
-                throw new ReservationException("No timeslots available for the given date. Please insert another date.");
-            }
-
+            Date = date;
             StartTime = startTime;
             SetEndTime();
-            TableNumber = restaurant.ChooseBestTable(partySize, date, startTime).TableNumber;
         }
                 
         // ReservationId will be set once the reservation is inserted into the database
@@ -43,22 +37,22 @@ namespace RestaurantProject.Domain.Models {
                 if (value != null) {
                     _restaurant = value;
                 } else {
-                    throw new ReservationException("Invalid restaurant info. Please choose the correct restaurant");
+                    throw new ReservationException("Invalid restaurant info. Please insert correct restaurant info");
                 }
             }
         }
 
         private User _user;
-        public User User{
+
+        public User User {
             get { return _user; }
             set {
                 if (value != null) {
                     _user = value;
-                } else {
-                    throw new ReservationException("Invalid user info. Please choose the correct user.");
                 }
             }
-        }
+        }        
+
 
         private int _partySize;
         public int PartySize {
@@ -71,10 +65,10 @@ namespace RestaurantProject.Domain.Models {
             } 
         }
 
-        private DateTime _date;
-        public DateTime Date {
+        private DateOnly _date;
+        public DateOnly Date {
             get { return _date; }
-            set { if(value >= DateTime.Now.Date && value < DateTime.Now.AddMonths(3)) {
+            set { if(value >= DateOnly.FromDateTime(DateTime.Now.Date) && value < DateOnly.FromDateTime(DateTime.Now.AddMonths(3))) {
                     _date = value;
                 } else {
                     throw new ReservationException("Invalid Date. Please select a data between today and three months from now.");

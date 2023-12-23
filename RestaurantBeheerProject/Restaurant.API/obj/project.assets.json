@@ -1152,7 +1152,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.14"
+          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.14",
+          "RestaurantProject.Domain": "1.0.0"
         },
         "compile": {
           "bin/placeholder/RestaurantProject.Datalayer.dll": {}
