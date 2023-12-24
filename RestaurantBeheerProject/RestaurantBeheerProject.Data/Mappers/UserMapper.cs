@@ -15,12 +15,12 @@ namespace RestaurantProject.Datalayer.Mappers {
                 domainUser.HouseNumberLabel = dataUser.HouseNumberLabel;
             }
 
-            domainUser.SetUserId(dataUser.UserID);
+            domainUser.SetUserID(dataUser.UserID);
 
             return domainUser;
         }
 
-        public async static UserEF MapToData(User domainUser, RestaurantDbContext context) {
+        public static UserEF MapToData(User domainUser, RestaurantDbContext context) {
             if (domainUser.GetUserID() == 0) {
                 UserEF dataUser = new() {
                     Name = domainUser.Name,
@@ -39,7 +39,8 @@ namespace RestaurantProject.Datalayer.Mappers {
 
                 return dataUser;
             }else {
-                var existingUser = await context.Users
+                throw new NotImplementedException();
+                //var existingUser = await context.Users
             }            
         }
     }

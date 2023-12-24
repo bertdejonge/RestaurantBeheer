@@ -21,29 +21,8 @@ namespace RestaurantProject.Datalayer.Data {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            // modelBuilder.Entity<Reservation>()
-            // .HasKey(r => r.ReservationID);
-
-            // modelBuilder.Entity<Reservation>()
-            //.HasOne(r => r.Restaurant)
-            //.WithMany()
-            //.HasForeignKey(r => r.Restaurant);
-
-            // modelBuilder.Entity<Reservation>()
-            // .HasOne(r => r.User)
-            // .WithMany()
-            // .HasForeignKey(r => r.User);
-
-            //modelBuilder.Entity<RestaurantEF>()
-            //.HasMany(r => r.Reservations)
-            //.WithOne(r => r.Restaurant)
-            //.OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<UserEF>()
-            //.HasMany(u => u.Reservations)
-            //.WithOne(r => r.User)
-            //.OnDelete(DeleteBehavior.Restrict);
-
+            
         }
+
     }
 }

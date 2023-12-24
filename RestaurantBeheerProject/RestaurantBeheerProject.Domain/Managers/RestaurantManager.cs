@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Managers {
-    public class RestaurantManager {
+    public class RestaurantManager : IRestaurantService {
 
         private IRestaurantRepository _repo;
 
@@ -101,13 +101,13 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task UpdateRestaurantAsync(int restaurantID, Restaurant domainRestaurant) {
+        public async Task UpdateRestaurantAsync(Restaurant domainRestaurant) {
             try {
                 if (domainRestaurant == null) {
                     throw new RestaurantManagerException("The new restaurant can't be null");
                 }
 
-                await _repo.UpdateRestaurantAsync(restaurantID, domainRestaurant);
+                await _repo.UpdateRestaurantAsync(domainRestaurant);
             } catch(Exception ex) {
                 throw new RestaurantManagerException("Error is UpdateRestaurantAsync " + ex.Message);
             }

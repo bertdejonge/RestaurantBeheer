@@ -43,7 +43,7 @@ namespace RestaurantProject.Datalayer.Mappers {
             return domainResto;
         }
 
-        public async static RestaurantEF MapToData(Restaurant domainRestaurant, RestaurantDbContext context) {
+        public async static Task<RestaurantEF> MapToData(Restaurant domainRestaurant, RestaurantDbContext context) {
             // ID =0 means the record hasn't been in the db, so set the values
             if (domainRestaurant.RestaurantID == 0) {
                 RestaurantEF data = new();

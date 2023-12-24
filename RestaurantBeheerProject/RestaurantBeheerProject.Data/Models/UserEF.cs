@@ -32,16 +32,20 @@ namespace RestaurantProject.Datalayer.Models {
         public int Zipcode { get; set; }
 
         [MaxLength(255)]
-        public string StreetName { get; set; }
+        public string? StreetName { get; set; }
 
         [MaxLength(10)]
-        public string HouseNumberLabel { get; set; }
+        public string? HouseNumberLabel { get; set; }
 
         public override bool Equals(object? obj) {
             return obj is UserEF eF &&
                    Name == eF.Name &&
                    PhoneNumber == eF.PhoneNumber &&
-                   Email == eF.Email;
+                   Email == eF.Email &&
+                   Municipality == eF.Municipality &&
+                   Zipcode == eF.Zipcode &&
+                   StreetName == eF.StreetName &&
+                   HouseNumberLabel == eF.HouseNumberLabel;
         }
     }
 }

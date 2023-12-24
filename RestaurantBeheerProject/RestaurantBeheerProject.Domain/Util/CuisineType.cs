@@ -8,38 +8,41 @@ namespace RestaurantProject.Domain.Util {
     public static class CuisineType {
         public static bool IsInList(string cuisine) {
             List<string> cuisineOptions = new List<string>() {
-            "French",
-            "Italian",
-            "Greek",
-            "Chinese",
-            "Japanese",
-            "Mexican",
-            "Indian",
-            "Thai",
-            "Spanish",
-            "American",
-            "Brazilian",
-            "Turkish",
-            "Lebanese",
-            "Korean",
-            "Vietnamese",
-            "Moroccan",
-            "Peruvian",
-            "Russian",
-            "Belgian",
-            "Dutch",
-            "German",
-            "British",
-            "Fusion", // For fusion cuisines that combine multiple culinary traditions
-            "Other" // For any other cuisine type not listed
+            "french",
+            "italian",
+            "greek",
+            "chinese",
+            "japanese",
+            "mexican",
+            "indian",
+            "thai",
+            "spanish",
+            "american",
+            "brazilian",
+            "turkish",
+            "lebanese",
+            "korean",
+            "vietnamese",
+            "moroccan",
+            "peruvian",
+            "russian",
+            "belgian",
+            "dutch",
+            "german",
+            "british",
+            "fusion", // For fusion cuisines that combine multiple culinary traditions
+            "other" // For any other cuisine type not listed
             };
 
-            // search case-insensitive
-            if(cuisineOptions.Contains(cuisine, StringComparer.OrdinalIgnoreCase)) {
-                return true;
-            } else { 
-                return false; 
+            // search case-insensitive and remove whitespace
+            cuisine = cuisine.ToLower().Trim();
+
+            foreach(string option in cuisineOptions) {
+                if(option.Contains(cuisine)) {
+                    return true;
+                } 
             }
+            return false;
 
         }
 

@@ -140,7 +140,7 @@ namespace RestaurantProject.Datalayer.Repositories {
         // Updates a restaurant 
         public async Task UpdateRestaurantAsync(Restaurant domainRestaurant) {
             try {
-                RestaurantEF updatedRestaurant = RestaurantMapper.MapToData(domainRestaurant, _context);
+                RestaurantEF updatedRestaurant = await RestaurantMapper.MapToData(domainRestaurant, _context);
 
                 if(! await ExistingRestaurantAsync(updatedRestaurant.ZipCode, updatedRestaurant.Name, updatedRestaurant.Cuisine)) {
                     throw new RestaurantRepositoryException("Restaurant doesn't exist");

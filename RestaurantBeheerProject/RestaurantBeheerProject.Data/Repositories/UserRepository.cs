@@ -25,8 +25,8 @@ namespace RestaurantProject.Datalayer.Repositories {
             _context.ChangeTracker.Clear();
         }
 
-        public async Task<bool> ExistingUser(string name, string phoneNumber, string email) {
-            return await _context.Users.AnyAsync(u => u.Name == name && u.PhoneNumber == phoneNumber  && u.Email == email);
+        public async Task<bool> ExistingUser(string phoneNumber, string email) {
+            return await _context.Users.AnyAsync(u => u.PhoneNumber == phoneNumber || u.Email == email);
         }
 
         public async Task<User> GetUserByIdAsync(int id) {
@@ -45,15 +45,16 @@ namespace RestaurantProject.Datalayer.Repositories {
             }
         }
 
-        public async Task CreateUserAsync(User user) {
+        public async Task<User> CreateUserAsync(User user) {
             try {
 
-                if (await ExistingUser(user.Name, user.PhoneNumber, user.Email)) {
-                    throw new UserRepositoryException($"User with name {user.Name}, phonenumber {user.PhoneNumber} and email {user.Email} already exists.");
+                if (await ExistingUser(user.PhoneNumber, user.Email)) {
+                    throw new UserRepositoryException($"A user with phone number {user.PhoneNumber} or email {user.Email} already exists");
                 }
-
+                var dataUser = UserMapper.MapToData(user, _context);
                 _context.Add(UserMapper.MapToData(user, _context));
                 await SaveAndClearAsync();
+                return UserMapper.MapToDomain(await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == user.PhoneNumber && u.Email == user.Email));
             } catch (Exception) {
 
                 throw;
@@ -76,28 +77,36 @@ namespace RestaurantProject.Datalayer.Repositories {
             }
         }
 
-        public async Task UpdateUserAsync(User domainUser) {
+        public async Task<User> UpdateUserAsync(int userId, User input) {
             try {
-                UserEF updatedUser = UserMapper.MapToData(domainUser, _context);
+                UserEF oldUser = _context.Users.FirstOrDefault(u => u.UserID == userId);
 
-                if (!await ExistingUser(updatedUser.Name, updatedUser.PhoneNumber, updatedUser.Email)) {
+                if(oldUser == null) {
                     throw new UserRepositoryException("User doesn't exist and thus can't be updated");
                 }
 
-                var existingUser = _context.ChangeTracker.Entries<UserEF>()
-                                   .FirstOrDefault(u => u.Entity.UserID == updatedUser.UserID);
-
-                if(existingUser != null) {
-                    existingUser.State = EntityState.Detached;
-                }
+                UserEF updatedUser = UserMapper.MapToData(input, _context);
 
                 // Equals overridden
-                if(updatedUser.Equals(existingUser)) {
-                    throw new UserRepositoryException("Reservations are the same. No update required. ");
+                if(oldUser.Equals(updatedUser)) {
+                    throw new UserRepositoryException("Users are the same. No update required. ");
                 }
 
-                _context.Update(updatedUser);
+                if(await ExistingUser(updatedUser.PhoneNumber, updatedUser.Email)) {
+                    throw new UserRepositoryException("The given phone number or email address are already registered for another user.");
+                }
+
+                oldUser.Name = updatedUser.Name;
+                oldUser.Email = updatedUser.Email;
+                oldUser.PhoneNumber = updatedUser.PhoneNumber;
+                oldUser.Zipcode = updatedUser.Zipcode;
+                oldUser.Municipality = updatedUser.Municipality;
+                oldUser.StreetName = updatedUser.StreetName;
+                oldUser.HouseNumberLabel = updatedUser.HouseNumberLabel;
+                
+                _context.Update(oldUser);
                 await SaveAndClearAsync();
+                return UserMapper.MapToDomain(oldUser);
 
             } catch (Exception) {
 

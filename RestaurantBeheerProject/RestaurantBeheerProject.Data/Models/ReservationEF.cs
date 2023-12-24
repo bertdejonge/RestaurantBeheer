@@ -26,10 +26,7 @@ namespace RestaurantProject.Datalayer.Models {
         public int PartySize { get; set; }
 
         [Required]
-        public DateOnly Date { get; set; }
-
-        [Required]
-        public TimeSpan StartTime { get; set; }
+        public DateTime DateAndStartTime { get; set; }
 
         [ForeignKey("TableID")]
         public int TableNumber { get; set; }
@@ -39,7 +36,7 @@ namespace RestaurantProject.Datalayer.Models {
                    ReservationID == eF.ReservationID &&
                    RestaurantID == eF.RestaurantID &&
                    UserID == eF.UserID &&
-                   Date.Equals(eF.Date);
+                   DateAndStartTime.Equals(eF.DateAndStartTime);
         }
     }
 }

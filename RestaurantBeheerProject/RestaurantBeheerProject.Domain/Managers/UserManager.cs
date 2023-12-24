@@ -1,15 +1,13 @@
-﻿using RestaurantProject.Domain.Interfaces;
+﻿using RestaurantProject.Domain.Exceptions;
+using RestaurantProject.Domain.Interfaces;
 using RestaurantProject.Domain.Models;
-using RestaurantProject.
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RestaurantProject.Datalayer.Exceptions;
 
 namespace RestaurantProject.Domain.Managers {
-    public class UserManager {
+    public class UserManager : IUserService{
         private IUserRepository _repo;
 
         public UserManager(IUserRepository repo) {
@@ -30,13 +28,14 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task CreateUserAsync(User user) {
+        public async Task<User> CreateUserAsync(User user) {
             try {
                 if (user == null) {
                     throw new UserManagerException("User can't be null. ");
                 }
 
-                await _repo.CreateUserAsync(user);
+                User created = await _repo.CreateUserAsync(user);
+                return created;
             } catch (Exception ex) {
 
                 throw new UserManagerException("Error in CreateUserAsync: " + ex.Message);
@@ -46,7 +45,7 @@ namespace RestaurantProject.Domain.Managers {
         public async Task RemoveUserAsync(int userId) {
             try {
                 if (userId <= 0) {
-                    throw new UserManagerException("Id can't be 0.");
+                    throw new UserManagerException("Id must be bigger than 0.");
                 }
 
                 await _repo.RemoveUserAsync(userId);
@@ -57,13 +56,17 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task UpdateUserAsync(User domainUser) {
+        public async Task<User> UpdateUserAsync(int userId, User domainUser) {
             try {
-                if (domainUser == null) {
-                    throw new UserManagerException("User can't be null");
+                if (userId <= 0) {
+                    throw new UserManagerException("ID must be bigger than 0.");
                 }
 
-                await _repo.UpdateUserAsync(domainUser);
+                if (domainUser == null) {
+                    throw new UserManagerException("User can't be null");
+                }               
+
+                return await _repo.UpdateUserAsync(userId, domainUser);
 
             } catch (Exception ex) {
 

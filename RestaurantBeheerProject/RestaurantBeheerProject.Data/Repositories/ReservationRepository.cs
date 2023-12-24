@@ -27,7 +27,8 @@ namespace RestaurantProject.Datalayer.Repositories {
         }
 
         public async Task<bool> ExistingReservation(int restaurantID, int userID, DateOnly date) {
-            return await _context.Reservations.AnyAsync(r => r.RestaurantID == restaurantID && r.UserID == userID && r.Date == date);
+            return await _context.Reservations.AnyAsync(r => r.RestaurantID == restaurantID && r.UserID == userID 
+                            && DateOnly.FromDateTime(r.DateAndStartTime.Date) == date);
         }
 
         public async Task<Reservation> GetReservationByIDAsync(int reservationID) {
@@ -57,13 +58,14 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // select only the ones for the specified date and map them to domain
                 if(optionalDate == null || optionalDate <= date) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
-                                         .Include(r => r.User).Where(r => r.Date == date)
+                                         .Include(r => r.User).Where(r => DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
                 } else {
                     // Same except date must be between the 2 values 
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
-                                         .Include(r => r.User).Where(r => r.Date >= date && r.Date <= optionalDate)
+                                         .Include(r => r.User)
+                                         .Where(r => DateOnly.FromDateTime(r.DateAndStartTime.Date) >= date && DateOnly.FromDateTime(r.DateAndStartTime.Date) <= optionalDate)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
                 }
@@ -108,9 +110,9 @@ namespace RestaurantProject.Datalayer.Repositories {
         
         public async Task UpdateReservationAsync(Reservation domainReservation) {
             try {
-                ReservationEF updatedReservation = ReservationMapper.MapToData(domainReservation, _context);
+                ReservationEF updatedReservation = await ReservationMapper.MapToData(domainReservation, _context);
 
-                if (!await ExistingReservation(updatedReservation.Restaurant.RestaurantID, updatedReservation.User.UserID, updatedReservation.Date)) {
+                if (!await ExistingReservation(updatedReservation.Restaurant.RestaurantID, updatedReservation.User.UserID, DateOnly.FromDateTime(updatedReservation.DateAndStartTime.Date))) {
                     throw new ReservationRepositoryException("Reservation doesn't exist and thus can't be updated");
                 }
 

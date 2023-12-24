@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Managers {
-    public class ReservationManager {
+    public class ReservationManager : IReservationService{
 
         private IReservationRepository _repo;
 
@@ -77,7 +77,7 @@ namespace RestaurantProject.Domain.Managers {
 
         public async Task UpdateReservationAsync(Reservation domainReservation) {
             try {
-                await _repo.UpdateReservationAsync(domainReservation)
+                await _repo.UpdateReservationAsync(domainReservation);
             } catch (Exception ex) {
 
                 throw new ReservationManagerException("Error is UpdateReservationAsync: " + ex.Message);

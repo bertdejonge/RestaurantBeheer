@@ -20,9 +20,11 @@ namespace RestaurantProject.Datalayer.Mappers {
             Dictionary<DateOnly, List<TimeOnly>> reservationDateToStarttimes = new();
 
             // Get the dates of the reservations and their respective startimes 
-            foreach (DateOnly date in reservationsForTable.Select(r => r.Date)) {
+            foreach (DateOnly date in reservationsForTable.Select(r => DateOnly.FromDateTime(r.DateAndStartTime.Date))) {
                 if (!reservationDateToStarttimes.ContainsKey(date)) {
-                    List<TimeOnly> startTimesForDate = reservationsForTable.Where(r => r.Date == date).Select(r => TimeOnly.FromTimeSpan(r.StartTime)).ToList();
+                    List<TimeOnly> startTimesForDate = reservationsForTable.Where(r => DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
+                                                       .Select(r =>TimeOnly.FromTimeSpan(r.DateAndStartTime.TimeOfDay)).ToList();
+
                     reservationDateToStarttimes.Add(date, startTimesForDate);
                 }
             }

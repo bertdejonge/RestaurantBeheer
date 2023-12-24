@@ -85,9 +85,5 @@ namespace RestaurantProject.Domain.Models {
 
             }
         }
-
-        internal bool IsAvailable(DateOnly date, TimeOnly reservationTime) {
-            throw new NotImplementedException();
-        }
     }
 }
