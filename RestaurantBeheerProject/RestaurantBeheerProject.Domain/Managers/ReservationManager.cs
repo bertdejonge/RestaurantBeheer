@@ -30,17 +30,17 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsRestaurantForDateAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
+        public async Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null) {
             try {
-                if (restaurantID <= 0) {
-                    throw new ReservationManagerException("RestaurantID must be positive.");
+                if (userID <= 0) {
+                    throw new ReservationManagerException("UserID must be positive.");
                 }
 
                 if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date < DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
                     throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
                 }
 
-                return await _repo.GetReservationsRestaurantForDateAsync(restaurantID, date, optionalDate);
+                return await _repo.GetReservationsUserForDateOrRangeAsync(userID, date, optionalDate);
 
             } catch (Exception ex) {
 

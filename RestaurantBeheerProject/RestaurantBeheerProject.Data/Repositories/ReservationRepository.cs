@@ -49,7 +49,7 @@ namespace RestaurantProject.Datalayer.Repositories {
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsRestaurantForDateAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
+        public async Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null) {
             try {
                 List<Reservation> reservations = new();
 
@@ -58,7 +58,7 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // select only the ones for the specified date and map them to domain
                 if(optionalDate == null || optionalDate <= date) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
-                                         .Include(r => r.User).Where(r => DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
+                                         .Include(r => r.User).Where(r => r.UserID == userID && DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
                 } else {

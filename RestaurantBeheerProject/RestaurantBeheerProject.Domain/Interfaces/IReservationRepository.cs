@@ -13,7 +13,7 @@ namespace RestaurantProject.Domain.Interfaces {
         // Takes 2 or 3 arguments
         // If 2, search for date
         // If 3, search in range
-        Task<List<Reservation>> GetReservationsRestaurantForDateAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null);
+        Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null);
 
         Task CreateReservationAsync(Reservation reservation);            
 

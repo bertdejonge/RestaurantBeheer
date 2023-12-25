@@ -9,7 +9,7 @@ namespace RestaurantProject.Domain.Interfaces {
     public interface IReservationService {
         // GET
         Task<Reservation> GetReservationByIDAsync(int reservationID);
-        Task<List<Reservation>> GetReservationsRestaurantForDateAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null);
+        Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null);
          
         // POST
         Task CreateReservationAsync(Reservation reservation);

@@ -16,13 +16,17 @@ namespace RestaurantProject.API.Controllers;
 public class UserRestService : Controller {
     private readonly IUserService _userService;
     private readonly IRestaurantService _restaurantService;
+    private readonly IReservationService _reservationService;
 
-    public UserRestService(IUserService userService, IRestaurantService restaurantService) {
+    public UserRestService(IUserService userService, IRestaurantService restaurantService, IReservationService reservationService) {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _restaurantService = restaurantService ?? throw new ArgumentNullException(nameof(restaurantService));
+        _reservationService = reservationService ?? throw new ArgumentNullException(nameof(reservationService));
     }
 
+    // USER
     [HttpGet("{userId}")]
+    [Route("/users/")]
     public async Task<ActionResult<UserOutputDTO>> GetUserByIdAsync(int userId) {
         User user = await _userService.GetUserByIdAsync(userId);
 
@@ -35,6 +39,7 @@ public class UserRestService : Controller {
     }
 
     [HttpPost]
+    [Route("/users/adduser/")]
     public async Task<ActionResult<UserOutputDTO>> CreateUserAsync([FromBody] UserInputDTO user) {
         try {
 
@@ -46,7 +51,7 @@ public class UserRestService : Controller {
             var userDomainOutput = await _userService.CreateUserAsync(domainUser);
             var userOutput = MapFromDomain.MapFromUserDomain(userDomainOutput);
 
-            return Ok(userOutput);
+            return Created("test", userOutput);
         } catch (Exception) {
 
             throw;
@@ -54,6 +59,7 @@ public class UserRestService : Controller {
     }
 
     [HttpPut("{userId}")]
+    [Route("/users/{userId}/update")]
     public async Task<ActionResult<UserOutputDTO>> UpdateUserAsync(int userId, UserInputDTO input) {
         try {
             User mappedInput = MapToDomain.MapToUserDomain(input);
@@ -77,6 +83,7 @@ public class UserRestService : Controller {
         return NoContent();
     }
 
+    // Restaurant
     [HttpGet]
     public async Task<ActionResult<List<RestaurantOutputDTO>>> GetRestaurantsByFilterAsync(int? zipCode, string? cuisine) {
         var restaurants = await _restaurantService.GetRestaurantsByZipAndCuisineAsync(zipCode, cuisine);
@@ -101,5 +108,23 @@ public class UserRestService : Controller {
         return Ok(restaurantOutput);
     }
 
+    // RESERVATION
+    [HttpGet]
+    public async Task<ActionResult<List<ReservationOutputDTO>>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate) {
+        var reservations = await _reservationService.GetReservationsUserForDateOrRangeAsync(userID, date, optionalDate);
+
+        if(reservations.Count == 0) {
+            return BadRequest($"No reservations found for given date {date} or range {date} - {optionalDate}");
+        }
+
+        var reservationsOutput = reservations.Select(r => MapFromDomain.MapFromReservationDomain(r));
+        return Ok(reservationsOutput);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<RestaurantOutputDTO>> CreateReservationAsync() {
+        throw new NotImplementedException();
+    }
+        
 
 }

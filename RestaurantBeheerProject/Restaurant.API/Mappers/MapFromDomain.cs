@@ -25,20 +25,20 @@ namespace RestaurantProject.API.Mappers {
         private static TableOutputDTO MapFromTableDomain(Table t) {
             ValidateNotNull(t, "table");
 
-            TableOutputDTO tableOutput = new() {
+            TableOutputDTO tabloDTO = new() {
                 TableID = t.TableID,
                 TableNumber = t.TableNumber,
                 Seats = t.Seats
             };
 
-            return tableOutput;
+            return tabloDTO;
         }
 
 
         public static UserOutputDTO MapFromUserDomain(User user) {
             ValidateNotNull(user, "user");
 
-            UserOutputDTO userDTO = new() {
+            UserOutputDTO useroDTO = new() {
                 Id = user.UserID,
                 Name = user.Name,
                 Email = user.Email,
@@ -48,18 +48,36 @@ namespace RestaurantProject.API.Mappers {
             };
 
             if (!string.IsNullOrWhiteSpace(user.StreetName)) {
-                userDTO.StreetName = user.StreetName;
+                useroDTO.StreetName = user.StreetName;
             }
 
             if (!string.IsNullOrWhiteSpace(user.HouseNumberLabel)) {
-                userDTO.HouseNumberLabel = user.HouseNumberLabel;
+                useroDTO.HouseNumberLabel = user.HouseNumberLabel;
             }
 
-            return userDTO;
+            return useroDTO;
+        }
+
+        public static ReservationOutputDTO MapFromReservationDomain(Reservation r) {
+            ValidateNotNull(r, "reservation");
+
+            ReservationOutputDTO resoDTO = new() {
+                ReservationID = r.ReservationId,
+                RestaurantInfo = r.Restaurant.ToString(),
+                UserInfo = r.User.ToString(),
+                PartySize = r.PartySize,
+                Date = r.Date,
+                StartTime = r.StartTime,
+                TableNumber = r.TableNumber
+            };
+
+            return resoDTO;
         }
 
         private static void ValidateNotNull(object obj, string name) {
             if (obj == null) throw new ArgumentNullException(name);
         }
+
+        
     }
 }

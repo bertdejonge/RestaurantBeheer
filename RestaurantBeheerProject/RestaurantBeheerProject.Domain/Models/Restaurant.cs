@@ -202,7 +202,22 @@ namespace RestaurantProject.Domain.Models
         }       
 
         public override string? ToString() {
-            return $"{Name}, {Cuisine}, at {ZipCode})";
+            bool isValidStreet = string.IsNullOrWhiteSpace(StreetName);
+            bool isValidHouseNumber = string.IsNullOrWhiteSpace(HouseNumberLabel);
+
+            if (!isValidStreet && !isValidHouseNumber) {
+                return $"{Name}, {Cuisine} cuisine, in {Municipality}({ZipCode}). " +
+                       $"ContactInfo: {Email}, {PhoneNumber}";
+            } else if(isValidStreet) {
+                return $"{Name}, {Cuisine} cuisine, at {StreetName} ({Municipality}, {ZipCode}). " +
+                       $"ContactInfo: {Email}, {PhoneNumber}";
+            } else if(isValidStreet && isValidHouseNumber) {
+                return $"{Name}, {Cuisine} cuisine, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). " +
+                       $"ContactInfo: {Email}, {PhoneNumber}";
+            }else {
+                return $"{Name}, {Cuisine} cuisine, in {Municipality}, {ZipCode}). " +
+                       $"ContactInfo: {Email}, {PhoneNumber}";
+            }
         }
 
 
