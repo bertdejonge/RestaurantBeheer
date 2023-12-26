@@ -1,6 +1,9 @@
 ﻿using RestaurantProject.Datalayer.Data;
+using RestaurantProject.Datalayer.Exceptions;
 using RestaurantProject.Datalayer.Models;
 using RestaurantProject.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace RestaurantProject.Datalayer.Mappers {
     public class UserMapper {
@@ -20,7 +23,7 @@ namespace RestaurantProject.Datalayer.Mappers {
             return domainUser;
         }
 
-        public static UserEF MapToData(User domainUser, RestaurantDbContext context) {
+        public async static Task<UserEF> MapToData(User domainUser, RestaurantDbContext context) {
             if (domainUser.GetUserID() == 0) {
                 UserEF dataUser = new() {
                     Name = domainUser.Name,
@@ -39,8 +42,12 @@ namespace RestaurantProject.Datalayer.Mappers {
 
                 return dataUser;
             }else {
-                throw new NotImplementedException();
-                //var existingUser = await context.Users
+                UserEF existingUser = await context.Users.Where(u => u.UserID == domainUser.UserID).FirstOrDefaultAsync();
+                
+                if(existingUser == null) {
+                    throw new UserMapperException("No user found with corresponding ID");
+                }
+                return existingUser;
             }            
         }
     }

@@ -62,25 +62,34 @@ namespace RestaurantProject.Domain.Managers {
         }
 
 
-        public async Task CreateReservationAsync(Reservation reservation) {
+        public async Task<Reservation> CreateReservationAsync(Reservation reservation) {
             try {
                 if (reservation == null) {
                     throw new ReservationManagerException("Restaurant can't be null. ");
                 }
 
-                await _repo.CreateReservationAsync(reservation);
+                return await _repo.CreateReservationAsync(reservation);
             } catch (Exception ex) {
 
                 throw new ReservationManagerException("Error in CreateReservationAsync: " + ex);
             }
         }
 
-        public async Task UpdateReservationAsync(Reservation domainReservation) {
+        public async Task<Reservation> UpdateReservationAsync(int reservationID, Reservation domainReservation) {
             try {
-                await _repo.UpdateReservationAsync(domainReservation);
+                return await _repo.UpdateReservationAsync(reservationID, domainReservation);
             } catch (Exception ex) {
 
                 throw new ReservationManagerException("Error is UpdateReservationAsync: " + ex.Message);
+            }
+        }
+
+        public async Task<List<Reservation>> GetReservationsForRestaurantAsync(int restaurantID) {
+            try {
+                return await _repo.GetReservationsForRestaurantAsync(restaurantID);
+            } catch (Exception) {
+
+                throw;
             }
         }
     }

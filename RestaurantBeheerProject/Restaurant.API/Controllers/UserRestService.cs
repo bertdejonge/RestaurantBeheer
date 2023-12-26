@@ -17,6 +17,7 @@ public class UserRestService : Controller {
     private readonly IUserService _userService;
     private readonly IRestaurantService _restaurantService;
     private readonly IReservationService _reservationService;
+    private readonly RestaurantDbContext _context = new();
 
     public UserRestService(IUserService userService, IRestaurantService restaurantService, IReservationService reservationService) {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
@@ -122,9 +123,45 @@ public class UserRestService : Controller {
     }
 
     [HttpPost]
-    public async Task<ActionResult<RestaurantOutputDTO>> CreateReservationAsync() {
-        throw new NotImplementedException();
+    public async Task<ActionResult<ReservationOutputDTO>> CreateReservationAsync([FromBody] ReservationInputDTO input) {
+        if(input == null) { 
+            throw new ArgumentNullException(nameof(input)); 
+        }
+
+        Reservation domainReservation = MapToDomain.MapToReservationDomain(input, _context);                        // W/O ID
+        Reservation domainReservationOutput = await _reservationService.CreateReservationAsync(domainReservation); // W/ ID
+        ReservationOutputDTO reservationOutput = MapFromDomain.MapFromReservationDomain(domainReservationOutput);
+
+        return Created("tesT", reservationOutput);
     }
+
+    [HttpPut]
+    public async Task<ActionResult<ReservationOutputDTO>> UpdateReservationAsync(int reservationID, [FromBody] ReservationInputDTO input) {
+        try {
+            Reservation domainReservation = MapToDomain.MapToReservationDomain(input, _context);
+            Reservation updatedReservation = await _reservationService.UpdateReservationAsync(reservationID, domainReservation);
+            var updatedReservationOutput = MapFromDomain.MapFromReservationDomain(updatedReservation); 
+            return Ok(updatedReservationOutput);
+        } catch (Exception) {
+
+            throw;
+        }
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteReservationAsync(int reservationID) {
+        var reservation = await _reservationService.GetReservationByIDAsync(reservationID);
         
+        if(reservation.Date < DateOnly.FromDateTime(DateTime.Now.Date)) {
+            return BadRequest("Can't delete a reservation that has passed. ");
+        } else if(reservation.Date == DateOnly.FromDateTime(DateTime.Now.Date) 
+            && reservation.StartTime < TimeOnly.FromTimeSpan(DateTime.Now.TimeOfDay).AddHours(2)) { // min 2h in adv.
+            await _reservationService.CancelReservationAsync(reservationID);
+            return NoContent();
+        } else {
+            await _reservationService.CancelReservationAsync(reservationID);
+            return NoContent();
+        }
+    }
 
 }

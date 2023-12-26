@@ -10,14 +10,17 @@ namespace RestaurantProject.Domain.Interfaces {
         // GET
         Task<Reservation> GetReservationByIDAsync(int reservationID);
         Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null);
-         
+        Task<List<Reservation>> GetReservationsForRestaurantAsync(int restaurantID);
+
         // POST
-        Task CreateReservationAsync(Reservation reservation);
+        Task<Reservation> CreateReservationAsync(Reservation reservation);
 
         // PUT
-        Task UpdateReservationAsync(Reservation updatedReservation);
+        Task<Reservation> UpdateReservationAsync(int reservationID, Reservation updatedReservation);
 
         // DELETE
         Task CancelReservationAsync(int reservationID);
+
+        
     }
 }

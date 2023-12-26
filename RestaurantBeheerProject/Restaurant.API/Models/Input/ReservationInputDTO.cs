@@ -8,6 +8,6 @@ namespace RestaurantProject.API.Models.Input {
         public int UserID { get; set; }
         public int PartySize { get; set; }
         public DateOnly Date { get; set; }
-        public TimeSpan StartTime { get; set; }
+        public TimeOnly StartTime { get; set; }
     }
 }

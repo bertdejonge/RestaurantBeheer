@@ -81,7 +81,7 @@ namespace RestaurantProject.Domain.Models {
         private TimeOnly _startTime;
         public TimeOnly StartTime {
             get { return _startTime; }
-            set { if ((value >= new TimeOnly(17, 30) && value <= new TimeOnly(22, 00)) && (value.Minute == 0 || value.Minute == 30)) {
+            set { if ((value >= new TimeOnly(17, 00) && value <= new TimeOnly(22, 00)) && (value.Minute == 0 || value.Minute == 30)) {
                     _startTime = value; }
             }
         }

@@ -7,6 +7,8 @@ namespace RestaurantProject.API.Mappers {
         public static RestaurantOutputDTO MapFromRestaurantDomain(Restaurant restaurant) {
             ValidateNotNull(restaurant, "restaurant");
 
+            List<Table> tables = new List<Table>();
+
             RestaurantOutputDTO restoDTO = new() {
                 ID = restaurant.RestaurantID,
                 Name = restaurant.Name,

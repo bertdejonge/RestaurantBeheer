@@ -11,9 +11,10 @@ namespace RestaurantProject.Datalayer.Mappers {
 
             // Now the dictionary of all available standard dates and times is set, 
             // remove all the timeslots that are reserved 
+
             // First get all the reservations for the table
             List<ReservationEF> reservationsForTable = context.Reservations
-                                                    .Where(r => r.Restaurant.Tables.Any(t => t.TableID == domain.TableID))
+                                                    .Where(r => r.Restaurant.Tables.Any(t => t.TableNumber == domain.TableNumber))
                                                     .ToList();
 
             // Then make a dictionary to get all the different reservation dates with their timeslots

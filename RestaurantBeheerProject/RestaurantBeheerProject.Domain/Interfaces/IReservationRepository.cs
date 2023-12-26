@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 namespace RestaurantProject.Domain.Interfaces {
     public interface IReservationRepository {
 
+        // GET
         Task<Reservation> GetReservationByIDAsync(int reservationID);
-
-        // Takes 2 or 3 arguments
-        // If 2, search for date
-        // If 3, search in range
         Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null);
+        Task<List<Reservation>> GetReservationsForRestaurantAsync(int restaurantID);
 
-        Task CreateReservationAsync(Reservation reservation);            
+        // POST
+        Task<Reservation> CreateReservationAsync(Reservation reservation);            
 
-        // Uur, Datum, aantal plaatsen
-        Task UpdateReservationAsync(Reservation updatedReservation);
+        // PUT
+        Task<Reservation> UpdateReservationAsync(int reservationID, Reservation updatedReservation);
 
-        // Enkel voor aankomende reservaties
+        // DELETE
         Task CancelReservationAsync(int reservationID);
     }
 }

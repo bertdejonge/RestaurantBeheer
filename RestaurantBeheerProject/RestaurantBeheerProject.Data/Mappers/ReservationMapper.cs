@@ -16,7 +16,7 @@ namespace RestaurantProject.Datalayer.Mappers {
 
             ReservationEF dataReservation = new() {
                 Restaurant = await RestaurantMapper.MapToData(domainReservation.Restaurant, context),
-                User = UserMapper.MapToData(domainReservation.User, context),
+                User = await UserMapper.MapToData(domainReservation.User, context),
                 PartySize = domainReservation.PartySize,
                 DateAndStartTime = date,
                 TableNumber = domainReservation.TableNumber
