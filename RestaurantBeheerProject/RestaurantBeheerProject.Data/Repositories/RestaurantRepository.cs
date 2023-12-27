@@ -12,6 +12,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace RestaurantProject.Datalayer.Repositories {
     public class RestaurantRepository : IRestaurantRepository {
@@ -91,24 +92,46 @@ namespace RestaurantProject.Datalayer.Repositories {
         }
 
         // Creates a new restaurant record in the DB based on a restaurant from the 'UI'
-        public async Task CreateRestaurantAsync(Restaurant domainRestaurant) {
-            try {
+        public async Task<Restaurant> CreateRestaurantAsync(Restaurant domainRestaurant) {
+            using (var transaction = await _context.Database.BeginTransactionAsync()) {
+                try {
 
-                // Check if the given restaurant already exists in the database
-                // 2 restaurants are equal when they have the same zipcode and name
-                if (await ExistingRestaurantAsync(domainRestaurant.ZipCode, domainRestaurant.Name, domainRestaurant.Cuisine)) {
-                    throw new RestaurantRepositoryException($"Restaurant with Name {domainRestaurant.Name} and Zipcode {domainRestaurant.ZipCode} already exists.");
+                    // Check if the given restaurant already exists in the database
+                    // 2 restaurants are equal when they have the same zipcode and name
+                    if (await ExistingRestaurantAsync(domainRestaurant.ZipCode, domainRestaurant.Name, domainRestaurant.Cuisine)) {
+                        throw new RestaurantRepositoryException($"Restaurant with Name {domainRestaurant.Name} and Zipcode {domainRestaurant.ZipCode} already exists.");
+                    }
+
+                    // Map the restaurant and set its tables to an empty list so we can insert the restaurant first
+                    // and then get its ID to add to the tables so we can link the tables to their restaurant
+                    RestaurantEF dataResto = await RestaurantMapper.MapToData(domainRestaurant, _context);
+                    dataResto.Tables = new();
+
+                    // Insert the restaurant with an empty list of tables
+                    _context.Add(dataResto);
+                    await SaveAndClearAsync();
+
+                    int restaurantID = dataResto.RestaurantID;
+
+                    // Now map every table to data, add the restaurantID and add them to the restaurant
+                    foreach (Table table in domainRestaurant.Tables) {
+                        TableEF dataTable = TableMapper.MapToData(table);
+                        dataTable.RestaurantID = restaurantID;
+                        dataResto.Tables.Add(dataTable);
+                    }
+
+                    await SaveAndClearAsync();
+                    await transaction.CommitAsync();
+
+                    return RestaurantMapper.MapToDomain(dataResto, _context);
+
+                } catch (Exception) {
+                    await transaction.RollbackAsync();
+                    throw;
                 }
-
-                // If new restaurant, add it to the database and save
-                _context.Add(RestaurantMapper.MapToData(domainRestaurant, _context));
-
-                await SaveAndClearAsync();
-
-            } catch (Exception ) {
-                throw;
             }
         }
+
         
         // Removes a restaurant based on its ID
         public async Task RemoveRestaurantAsync(int restaurantID) {

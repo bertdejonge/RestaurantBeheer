@@ -53,6 +53,7 @@ namespace RestaurantProject.Datalayer.Mappers {
                 data.Email = domainRestaurant.Email;
                 data.ZipCode = domainRestaurant.ZipCode;
                 data.Municipality = domainRestaurant.Municipality;
+                data.Tables = domainRestaurant.Tables.Select(t => TableMapper.MapToData(t)).ToList();
 
                 if (!string.IsNullOrWhiteSpace(domainRestaurant.StreetName)) {
                     data.StreetName = domainRestaurant.StreetName;

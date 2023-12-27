@@ -38,7 +38,6 @@ namespace RestaurantProject.Datalayer.Models {
         [MaxLength(10)]
         public string HouseNumberLabel { get; set; }
 
-        [Required]
         public List<TableEF> Tables { get; set;}
 
         public override bool Equals(object? obj) {

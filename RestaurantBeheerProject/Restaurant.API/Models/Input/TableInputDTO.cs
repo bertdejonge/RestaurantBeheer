@@ -4,9 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RestaurantProject.API.Models.Input {
     public class TableInputDTO {
-        public int TableID { get; set; }
         public int TableNumber { get; set; }
         public int Seats { get; set; }
-        public int RestaurantID { get; set; }
     }
 }

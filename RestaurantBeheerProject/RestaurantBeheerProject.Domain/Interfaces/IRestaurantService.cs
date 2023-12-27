@@ -6,14 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Interfaces {
-    public interface IRestaurantService {       
+    public interface IRestaurantService {
+
+        Task<bool> ExistingRestaurantAsync(Restaurant domainRestaurant);
+
         // GET
         Task<Restaurant> GetRestaurantByIdAsync(int id);
         Task<List<Restaurant>> GetAvailableRestaurantsForDateAsync(DateOnly date, int partySize);
         Task<List<Restaurant>> GetRestaurantsByZipAndCuisineAsync(int? zipcode = null, string? cuisine = null);
 
         // POST
-        Task CreateRestaurantAsync(Restaurant restaurant);
+        Task<Restaurant> CreateRestaurantAsync(Restaurant restaurant);
 
         // PUT
         Task UpdateRestaurantAsync(Restaurant updatedRestaurant);

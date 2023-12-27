@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using RestaurantProject.Datalayer.Data;
 using RestaurantProject.Datalayer.Repositories;
 using RestaurantProject.Domain.Interfaces;
@@ -12,15 +13,15 @@ namespace RestaurantProject.API {
             RestaurantDbContext context = new();
 
             builder.Services.AddControllers();
+
             builder.Services.AddSingleton<IRestaurantRepository>(r => new RestaurantRepository(context));
-            builder.Services.AddSingleton<RestaurantManager>();
+            builder.Services.AddSingleton<IRestaurantService, RestaurantManager>();
 
             builder.Services.AddSingleton<IReservationRepository>(r => new ReservationRepository(context));
-            builder.Services.AddSingleton<ReservationManager>();
+            builder.Services.AddSingleton<IReservationService, ReservationManager>();
 
             builder.Services.AddSingleton<IUserRepository>(u => new UserRepository(context));
-            builder.Services.AddSingleton<IUserService>(u => new UserManager(u.GetRequiredService<IUserRepository>()));
-            builder.Services.AddSingleton<UserManager>();
+            builder.Services.AddSingleton<IUserService,UserManager>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

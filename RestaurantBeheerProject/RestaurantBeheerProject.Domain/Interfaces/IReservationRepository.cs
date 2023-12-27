@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 namespace RestaurantProject.Domain.Interfaces {
     public interface IReservationRepository {
 
+        Task<bool> ExistingReservation(Reservation reservation);
+
         // GET
         Task<Reservation> GetReservationByIDAsync(int reservationID);
         Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null);
-        Task<List<Reservation>> GetReservationsForRestaurantAsync(int restaurantID);
+        Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null);
 
         // POST
         Task<Reservation> CreateReservationAsync(Reservation reservation);            

@@ -26,9 +26,9 @@ namespace RestaurantProject.Datalayer.Repositories {
             _context.ChangeTracker.Clear();
         }
 
-        public async Task<bool> ExistingReservation(int restaurantID, int userID, DateOnly date) {
-            return await _context.Reservations.AnyAsync(r => r.RestaurantID == restaurantID && r.UserID == userID 
-                            && DateOnly.FromDateTime(r.DateAndStartTime.Date) == date);
+        public async Task<bool> ExistingReservation(Reservation reservation) {
+            return await _context.Reservations.AnyAsync(r => r.RestaurantID == reservation.ReservationId && r.UserID == reservation.User.UserID 
+                            && DateOnly.FromDateTime(r.DateAndStartTime.Date) == reservation.Date);
         }
 
         public async Task<Reservation> GetReservationByIDAsync(int reservationID) {
@@ -78,7 +78,7 @@ namespace RestaurantProject.Datalayer.Repositories {
 
         public async Task<Reservation> CreateReservationAsync(Reservation reservation) {
             try {
-                if (await ExistingReservation(reservation.Restaurant.RestaurantID, reservation.User.UserID, reservation.Date)) {
+                if (await ExistingReservation(reservation)) {
                     throw new ReservationRepositoryException($"Reservation in {reservation.Restaurant} by {reservation.User} at {reservation.Date} already exists.");
                 }
 
@@ -86,12 +86,13 @@ namespace RestaurantProject.Datalayer.Repositories {
                 Table table = reservation.Restaurant.ChooseBestTable(reservation.PartySize, reservation.Date, reservation.StartTime);
                 reservation.TableNumber = table.TableNumber;
 
-                _context.Add(ReservationMapper.MapToData(reservation, _context));
+                ReservationEF dataReservation = await ReservationMapper.MapToData(reservation, _context);
+
+                _context.Add(dataReservation);
                 await SaveAndClearAsync();
 
                 DateTime dateAndStartTime = reservation.Date.ToDateTime(reservation.StartTime);
-                return ReservationMapper.MapToDomain(await _context.Reservations.FirstOrDefaultAsync(r => r.RestaurantID == reservation.Restaurant.RestaurantID 
-                                                                                                     && r.UserID == reservation.User.UserID && r.DateAndStartTime == dateAndStartTime), _context);
+                return ReservationMapper.MapToDomain(dataReservation, _context);
             } catch (Exception) {
 
                 throw;
@@ -120,10 +121,6 @@ namespace RestaurantProject.Datalayer.Repositories {
             try {
                 // Check if exists
                 var existingReservation = await _context.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationID);
-                               
-                if (existingReservation == null) {
-                    throw new ReservationRepositoryException("No existing reservation found to update. ");
-                }
 
                 var existingReservationDomain = ReservationMapper.MapToDomain(existingReservation, _context);
 
@@ -138,25 +135,20 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // currently blocked by the 1,5h reservation time
                 Table oldTable = existingReservationDomain.Restaurant.Tables.Find(t => t.TableNumber == existingReservation.TableNumber);
                 oldTable.AddCancelledReservationTimeForDate(input.Date, input.StartTime);
-                           
-                try {
-                    // If a table is available for the date, check if it corresponds with the desired starttime
-                    if (existingReservationDomain.Restaurant.IsAnyTableAvailableForDate(input.Date, input.PartySize)) {                       
 
-                        Table updatedTable = existingReservationDomain.Restaurant.ChooseBestTable(input.PartySize, input.Date, input.StartTime);
-                        existingReservationDomain.TableNumber = updatedTable.TableNumber;
-                        existingReservationDomain.Date = input.Date;
-                        existingReservationDomain.StartTime = input.StartTime;
-                        existingReservationDomain.PartySize = input.PartySize;
-                    } else {
-                        throw new ReservationRepositoryException("No timeslots available for this date");
-                    }
-                } catch (Exception ex) {
-                    // If something failed in updating the reservation, set the reservationtimes again
-                    oldTable.RemoveTakenTimeForDate(existingReservationDomain.Date, existingReservationDomain.StartTime);
-                    throw;
-                }         
-                
+
+                // If a table is available for the date, check if it corresponds with the desired starttime
+                if (existingReservationDomain.Restaurant.IsAnyTableAvailableForDate(input.Date, input.PartySize)) {
+
+                    Table updatedTable = existingReservationDomain.Restaurant.ChooseBestTable(input.PartySize, input.Date, input.StartTime);
+                    existingReservationDomain.TableNumber = updatedTable.TableNumber;
+                    existingReservationDomain.Date = input.Date;
+                    existingReservationDomain.StartTime = input.StartTime;
+                    existingReservationDomain.PartySize = input.PartySize;
+                } else {
+                    throw new ReservationRepositoryException("No timeslots available for this date");
+                }
+
                 existingReservation = await ReservationMapper.MapToData(existingReservationDomain, _context);
 
                 _context.Reservations.Update(existingReservation);
@@ -170,17 +162,33 @@ namespace RestaurantProject.Datalayer.Repositories {
 
         }
 
-        public async Task<List<Reservation>> GetReservationsForRestaurantAsync(int restaurantID) {
+        public async Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
             try {
-                List<Reservation> reservations = await _context.Reservations.Include(r => r.Restaurant)
-                                                .Where(r => r.RestaurantID == restaurantID)
-                                                .Select(r => ReservationMapper.MapToDomain(r, _context)).ToListAsync();
 
-                if(reservations.Count == 0 ) {
-                    throw new ReservationRepositoryException("No reservations found for this restaurant.");
+                List<Reservation> reservations = new();
+
+                // If no second date given, search for only the first date
+                // Get all the reservations, include restaurant and user navigation props, 
+                // select only the ones for the specified date and map them to domain
+                if (optionalDate == null || optionalDate <= date) {
+                    reservations = await _context.Reservations.Include(r => r.Restaurant)
+                                         .Include(r => r.User)
+                                         .Where(r => r.RestaurantID == restaurantID && 
+                                               DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
+                                         .Select(r => ReservationMapper.MapToDomain(r, _context))
+                                         .ToListAsync();
+                } else {
+                    // Same except date must be between the 2 values 
+                    reservations = await _context.Reservations.Include(r => r.Restaurant)
+                                         .Include(r => r.User)
+                                         .Where(r => r.RestaurantID == restaurantID 
+                                                && DateOnly.FromDateTime(r.DateAndStartTime.Date) >= date 
+                                                && DateOnly.FromDateTime(r.DateAndStartTime.Date) <= optionalDate)
+                                         .Select(r => ReservationMapper.MapToDomain(r, _context))
+                                         .ToListAsync();
                 }
-
                 return reservations;
+
             } catch (Exception) {
 
                 throw;

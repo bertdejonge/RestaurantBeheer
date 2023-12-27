@@ -56,8 +56,28 @@ namespace RestaurantProject.API.Mappers {
             return domainReservation;
         }
 
-        private static Restaurant MapToRestaurantDomain(RestaurantEF dataResto) {
-            throw new NotImplementedException();
+        public static Restaurant MapToRestaurantDomain(RestaurantInputDTO input) {
+            Restaurant restaurant = new(input.Name, input.Municipality, input.ZipCode, input.Cuisine,
+                                        input.Email, input.PhoneNumber, input.Tables.Select(t => MapToTableDomain(t)).ToList());
+
+
+            bool isValidStreet = string.IsNullOrWhiteSpace(input.StreetName);
+            bool isValidHouseNumber = string.IsNullOrWhiteSpace(input.HouseNumberLabel);
+
+            // Always assign street if valid, but only assign valid housenumber if street is also valid
+            if(isValidStreet && isValidHouseNumber) { 
+                restaurant.StreetName = input.StreetName;
+                restaurant.HouseNumberLabel = input.HouseNumberLabel;
+            } else if(isValidStreet && !isValidHouseNumber) {
+                restaurant.StreetName = input.StreetName;
+            }
+
+            return restaurant;
+        }
+
+        public static Table MapToTableDomain(TableInputDTO t) {
+            Table table = new(t.TableNumber, t.Seats);
+            return table;
         }
     }
 }

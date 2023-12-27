@@ -26,8 +26,7 @@ public class UserRestService : Controller {
     }
 
     // USER
-    [HttpGet("{userId}")]
-    [Route("/users/")]
+    [HttpGet("users/{userId}")]
     public async Task<ActionResult<UserOutputDTO>> GetUserByIdAsync(int userId) {
         User user = await _userService.GetUserByIdAsync(userId);
 
@@ -39,8 +38,7 @@ public class UserRestService : Controller {
         return Ok(userOutput);
     }
 
-    [HttpPost]
-    [Route("/users/adduser/")]
+    [HttpPost("users/adduser")]
     public async Task<ActionResult<UserOutputDTO>> CreateUserAsync([FromBody] UserInputDTO user) {
         try {
 
@@ -59,8 +57,7 @@ public class UserRestService : Controller {
         }
     }
 
-    [HttpPut("{userId}")]
-    [Route("/users/{userId}/update")]
+    [HttpPut("users/{userId}/update")]
     public async Task<ActionResult<UserOutputDTO>> UpdateUserAsync(int userId, UserInputDTO input) {
         try {
             User mappedInput = MapToDomain.MapToUserDomain(input);
@@ -73,7 +70,7 @@ public class UserRestService : Controller {
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("users/delete/{userId}")]
     public async Task<ActionResult> DeleteUser(int userId) {
         var existingUser = await _userService.GetUserByIdAsync(userId);
         if (existingUser == null) {
@@ -85,7 +82,7 @@ public class UserRestService : Controller {
     }
 
     // Restaurant
-    [HttpGet]
+    [HttpGet("restaurants/filter")]
     public async Task<ActionResult<List<RestaurantOutputDTO>>> GetRestaurantsByFilterAsync(int? zipCode, string? cuisine) {
         var restaurants = await _restaurantService.GetRestaurantsByZipAndCuisineAsync(zipCode, cuisine);
 
@@ -97,7 +94,7 @@ public class UserRestService : Controller {
         return Ok(restaurantOutput);
     }
 
-    [HttpGet]
+    [HttpGet("restaurants/available")]
     public async Task<ActionResult<List<RestaurantOutputDTO>>> GetAvailableRestaurantsForDate(DateOnly date, int partySize) {
         var restaurants = await _restaurantService.GetAvailableRestaurantsForDateAsync(date, partySize);
 
@@ -110,7 +107,7 @@ public class UserRestService : Controller {
     }
 
     // RESERVATION
-    [HttpGet]
+    [HttpGet("reservations/get/user")]
     public async Task<ActionResult<List<ReservationOutputDTO>>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate) {
         var reservations = await _reservationService.GetReservationsUserForDateOrRangeAsync(userID, date, optionalDate);
 
@@ -118,37 +115,45 @@ public class UserRestService : Controller {
             return BadRequest($"No reservations found for given date {date} or range {date} - {optionalDate}");
         }
 
-        var reservationsOutput = reservations.Select(r => MapFromDomain.MapFromReservationDomain(r));
+        var reservationsOutput = reservations.Select(r => MapFromDomain.MapFromReservationDomain(r)).ToList();
         return Ok(reservationsOutput);
     }
 
-    [HttpPost]
+    [HttpPost("reservations/addreservation")]
     public async Task<ActionResult<ReservationOutputDTO>> CreateReservationAsync([FromBody] ReservationInputDTO input) {
         if(input == null) { 
             throw new ArgumentNullException(nameof(input)); 
         }
 
         Reservation domainReservation = MapToDomain.MapToReservationDomain(input, _context);                        // W/O ID
-        Reservation domainReservationOutput = await _reservationService.CreateReservationAsync(domainReservation); // W/ ID
+        Reservation domainReservationOutput = await _reservationService.CreateReservationAsync(domainReservation);  // W/ ID
         ReservationOutputDTO reservationOutput = MapFromDomain.MapFromReservationDomain(domainReservationOutput);
 
         return Created("tesT", reservationOutput);
     }
 
-    [HttpPut]
+    [HttpPut("reservations/update/{reservationID}")]
     public async Task<ActionResult<ReservationOutputDTO>> UpdateReservationAsync(int reservationID, [FromBody] ReservationInputDTO input) {
         try {
             Reservation domainReservation = MapToDomain.MapToReservationDomain(input, _context);
-            Reservation updatedReservation = await _reservationService.UpdateReservationAsync(reservationID, domainReservation);
-            var updatedReservationOutput = MapFromDomain.MapFromReservationDomain(updatedReservation); 
-            return Ok(updatedReservationOutput);
+
+            if(await _reservationService.ExistingReservation(domainReservation)) {
+                Reservation updatedReservation = await _reservationService.UpdateReservationAsync(reservationID, domainReservation);
+                var updatedReservationOutput = MapFromDomain.MapFromReservationDomain(updatedReservation);
+                return Ok(updatedReservationOutput);
+            } else {
+                Reservation newReservation = await _reservationService.CreateReservationAsync(domainReservation);
+                ReservationOutputDTO reservationOutput = MapFromDomain.MapFromReservationDomain(newReservation);
+                return Created("test", reservationOutput);
+            }
+            
         } catch (Exception) {
 
             throw;
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("reservations/delete/{reservationID}")]
     public async Task<ActionResult> DeleteReservationAsync(int reservationID) {
         var reservation = await _reservationService.GetReservationByIDAsync(reservationID);
         

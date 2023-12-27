@@ -19,7 +19,7 @@ namespace RestaurantProject.Datalayer.Models {
         public int Seats {  get; set; }
 
         [ForeignKey("RestaurantID")]
-        public RestaurantEF Restaurant { get; set; }
+        public int RestaurantID { get; set; }
 
     }
 }

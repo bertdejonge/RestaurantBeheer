@@ -40,5 +40,13 @@ namespace RestaurantProject.Datalayer.Mappers {
             return domain;
         }
         
+        public static TableEF MapToData(Table domainTable) {
+            TableEF dataTable = new() {
+                Seats = domainTable.Seats,
+                TableNumber = domainTable.TableNumber
+            };
+
+            return dataTable;
+        }
     }
 }

@@ -3,6 +3,7 @@ using RestaurantProject.Domain.Interfaces;
 using RestaurantProject.Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,10 @@ namespace RestaurantProject.Domain.Managers {
 
         public ReservationManager(IReservationRepository repo) {
             _repo = repo;
+        }
+
+        public async Task<bool> ExistingReservation(Reservation reservation) {
+            return await _repo.ExistingReservation(reservation);
         }
 
         public async Task<Reservation> GetReservationByIDAsync(int reservationID) {
@@ -84,9 +89,18 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsForRestaurantAsync(int restaurantID) {
+        public async Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
             try {
-                return await _repo.GetReservationsForRestaurantAsync(restaurantID);
+
+                if (restaurantID <= 0) {
+                    throw new ReservationManagerException("RestaurantID must be positive.");
+                }
+
+                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date < DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                    throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
+                }
+
+                return await _repo.GetReservationsRestaurantForDateOrRangeAsync(restaurantID, date, optionalDate);
             } catch (Exception) {
 
                 throw;

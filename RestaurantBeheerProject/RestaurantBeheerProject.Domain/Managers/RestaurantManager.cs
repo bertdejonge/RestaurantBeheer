@@ -76,13 +76,13 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task CreateRestaurantAsync(Restaurant domainRestaurant) {
+        public async Task<Restaurant> CreateRestaurantAsync(Restaurant domainRestaurant) {
             try {
                 if (domainRestaurant == null) {
                     throw new RestaurantManagerException("Restaurant can't be null. ");
                 }
 
-                await _repo.CreateRestaurantAsync(domainRestaurant);
+                return await _repo.CreateRestaurantAsync(domainRestaurant);
             } catch (Exception ex) {
                 throw new RestaurantManagerException("Error in CreateRestaurantAsync: " + ex.Message);
             }
@@ -111,6 +111,10 @@ namespace RestaurantProject.Domain.Managers {
             } catch(Exception ex) {
                 throw new RestaurantManagerException("Error is UpdateRestaurantAsync " + ex.Message);
             }
-        } 
+        }
+
+        public async Task<bool> ExistingRestaurantAsync(Restaurant domainRestaurant) {
+            return await _repo.ExistingRestaurantAsync(domainRestaurant.ZipCode, domainRestaurant.Name, domainRestaurant.Cuisine);
+        }
     }
 }

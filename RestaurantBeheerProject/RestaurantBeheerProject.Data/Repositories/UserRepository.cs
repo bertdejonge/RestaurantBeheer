@@ -85,7 +85,7 @@ namespace RestaurantProject.Datalayer.Repositories {
                     throw new UserRepositoryException("User doesn't exist and thus can't be updated");
                 }
 
-                UserEF updatedUser = UserMapper.MapToData(input, _context);
+                UserEF updatedUser = await UserMapper.MapToData(input, _context);
 
                 // Equals overridden
                 if(oldUser.Equals(updatedUser)) {
