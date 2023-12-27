@@ -19,7 +19,7 @@ namespace RestaurantProject.Domain.Interfaces {
         Task<Restaurant> CreateRestaurantAsync(Restaurant restaurant);
 
         // PUT
-        Task UpdateRestaurantAsync(Restaurant updatedRestaurant);
+        Task<Restaurant> UpdateRestaurantAsync(int restaurantID, Restaurant updatedRestaurant);
 
         // DELETE
         Task RemoveRestaurantAsync(int restaurantID);

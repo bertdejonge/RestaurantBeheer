@@ -101,13 +101,13 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task UpdateRestaurantAsync(Restaurant domainRestaurant) {
+        public async Task<Restaurant> UpdateRestaurantAsync(int restaurantID, Restaurant domainRestaurant) {
             try {
                 if (domainRestaurant == null) {
                     throw new RestaurantManagerException("The new restaurant can't be null");
                 }
 
-                await _repo.UpdateRestaurantAsync(domainRestaurant);
+                return await _repo.UpdateRestaurantAsync(restaurantID, domainRestaurant);
             } catch(Exception ex) {
                 throw new RestaurantManagerException("Error is UpdateRestaurantAsync " + ex.Message);
             }

@@ -53,6 +53,11 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
+        public async Task<List<Reservation>> GetReservationsForRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
+            return await _repo.GetReservationsRestaurantForDateOrRangeAsync(restaurantID, date, optionalDate);
+        }
+
+
         public async Task CancelReservationAsync(int reservationID) {
             try {
                 if (reservationID <= 0) {

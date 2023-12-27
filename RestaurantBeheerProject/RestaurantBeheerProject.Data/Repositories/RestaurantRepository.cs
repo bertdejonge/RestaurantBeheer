@@ -161,30 +161,28 @@ namespace RestaurantProject.Datalayer.Repositories {
         }
 
         // Updates a restaurant 
-        public async Task UpdateRestaurantAsync(Restaurant domainRestaurant) {
+        public async Task<Restaurant> UpdateRestaurantAsync(int restaurantID, Restaurant input) {
             try {
-                RestaurantEF updatedRestaurant = await RestaurantMapper.MapToData(domainRestaurant, _context);
+                RestaurantEF oldRestaurant = await _context.Restaurants.Include(r => r.Tables).FirstOrDefaultAsync(r => r.RestaurantID == restaurantID);
 
-                if(! await ExistingRestaurantAsync(updatedRestaurant.ZipCode, updatedRestaurant.Name, updatedRestaurant.Cuisine)) {
-                    throw new RestaurantRepositoryException("Restaurant doesn't exist");
-                }
+                RestaurantEF updatedRestaurant = await RestaurantMapper.MapToData(input, _context);
 
-                // Change tracker of the the current restaurant and detach it to avoid conflicts
-                // EF might track the existing and update restaurant, which will result in a conflict 
-                var existingRestaurant = _context.ChangeTracker.Entries<RestaurantEF>()
-                                        .FirstOrDefault(r => r.Entity.RestaurantID == updatedRestaurant.RestaurantID);
-
-                if (existingRestaurant != null) {
-                    existingRestaurant.State = EntityState.Detached;
-                }
-
-                // Equals overridden
-                if (updatedRestaurant.Equals(existingRestaurant)) {
+                if(oldRestaurant.Equals(updatedRestaurant)) {
                     throw new RestaurantRepositoryException("Restaurants are the same. No update required.");
                 }
+
+                oldRestaurant.Name = input.Name;
+                oldRestaurant.Cuisine = input.Cuisine;
+                oldRestaurant.PhoneNumber = input.PhoneNumber;
+                oldRestaurant.Email = input.Email;
+                oldRestaurant.Municipality = input.Municipality;
+                oldRestaurant.ZipCode = input.ZipCode;
+                oldRestaurant.StreetName = input.StreetName;
+                oldRestaurant.HouseNumberLabel = input.HouseNumberLabel;
                 
-                _context.Restaurants.Update(updatedRestaurant);
+                _context.Update(oldRestaurant);
                 await SaveAndClearAsync();
+                return RestaurantMapper.MapToDomain(oldRestaurant, _context);
 
             } catch (Exception) {
                 throw;
