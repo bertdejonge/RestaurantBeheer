@@ -21,7 +21,6 @@ namespace RestaurantProject.Datalayer.Data {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            
         }
 
     }

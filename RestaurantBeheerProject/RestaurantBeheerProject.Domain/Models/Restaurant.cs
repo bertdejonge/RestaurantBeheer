@@ -206,16 +206,16 @@ namespace RestaurantProject.Domain.Models
             bool isValidHouseNumber = string.IsNullOrWhiteSpace(HouseNumberLabel);
 
             if (!isValidStreet && !isValidHouseNumber) {
-                return $"{Name}, {Cuisine} cuisine, in {Municipality}({ZipCode}). " +
+                return $"{Name}, {Cuisine} cuisine, in {Municipality}({ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if(isValidStreet) {
-                return $"{Name}, {Cuisine} cuisine, at {StreetName} ({Municipality}, {ZipCode}). " +
+                return $"{Name}, {Cuisine} cuisine, at {StreetName} ({Municipality}, {ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if(isValidStreet && isValidHouseNumber) {
-                return $"{Name}, {Cuisine} cuisine, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). " +
+                return $"{Name}, {Cuisine} cuisine, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). \n " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             }else {
-                return $"{Name}, {Cuisine} cuisine, in {Municipality}, {ZipCode}). " +
+                return $"{Name}, {Cuisine} cuisine, in {Municipality}, {ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             }
         }

@@ -58,12 +58,13 @@ namespace RestaurantProject.Datalayer.Repositories {
         public async Task<List<Restaurant>> GetAvailableRestaurantsForDateAsync(DateOnly date, int partySize) {
             try {
                 
+                // First get all restaurants
+                List<RestaurantEF> dataRestaurants = await _context.Restaurants.Include(r => r.Tables).ToListAsync();
 
-                var restaurants = await _context.Restaurants
-                                     .Include(t => t.Tables).Select(r => RestaurantMapper.MapToDomain(r, _context))
-                                     .ToListAsync();
+                List<Restaurant> restaurants = dataRestaurants.Select(dr => RestaurantMapper.MapToDomain(dr, _context)).ToList();
 
 
+                // And check for every restaurant if they have an available table that day
                 List<Restaurant> availableRestaurants = restaurants.Where(r => r.IsAnyTableAvailableForDate(date, partySize)).ToList();
 
 
@@ -81,8 +82,8 @@ namespace RestaurantProject.Datalayer.Repositories {
                 List<RestaurantEF> dataRestaurants = new(); 
 
                 // At least one of the paramters will not be null (checked in manager)
-                dataRestaurants = await _context.Restaurants
-                                 .Where(r => r.Cuisine == cuisine && r.ZipCode == zipCode).ToListAsync();
+                dataRestaurants = await _context.Restaurants.Include(r => r.Tables)
+                                 .Where(r => r.Cuisine == cuisine || r.ZipCode == zipCode).ToListAsync();
 
                 return dataRestaurants.Select(r => RestaurantMapper.MapToDomain(r, _context)).ToList();
 
@@ -102,10 +103,11 @@ namespace RestaurantProject.Datalayer.Repositories {
                         throw new RestaurantRepositoryException($"Restaurant with Name {domainRestaurant.Name} and Zipcode {domainRestaurant.ZipCode} already exists.");
                     }
 
-                    // Map the restaurant and set its tables to an empty list so we can insert the restaurant first
+                    // Map the restaurant and clear its tables so we can insert the restaurant first
                     // and then get its ID to add to the tables so we can link the tables to their restaurant
                     RestaurantEF dataResto = await RestaurantMapper.MapToData(domainRestaurant, _context);
-                    dataResto.Tables = new();
+                    List<TableEF> tempDataTables = new(dataResto.Tables);
+                    dataResto.Tables.Clear();
 
                     // Insert the restaurant with an empty list of tables
                     _context.Add(dataResto);
@@ -113,13 +115,13 @@ namespace RestaurantProject.Datalayer.Repositories {
 
                     int restaurantID = dataResto.RestaurantID;
 
-                    // Now map every table to data, add the restaurantID and add them to the restaurant
-                    foreach (Table table in domainRestaurant.Tables) {
-                        TableEF dataTable = TableMapper.MapToData(table);
-                        dataTable.RestaurantID = restaurantID;
-                        dataResto.Tables.Add(dataTable);
+                    // Now link the restaurant ID to every table in the temp and add them to the restaurant
+                    foreach (TableEF table in tempDataTables) {
+                        table.RestaurantID = restaurantID;
+                        dataResto.Tables.Add(table);
                     }
 
+                    _context.Update(dataResto);
                     await SaveAndClearAsync();
                     await transaction.CommitAsync();
 
@@ -150,20 +152,25 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // If a restaurant was retrieved, that means that the restaurant exists, and thus can be removed
                 _context.Remove(dataRestaurant);
 
-                // Also remove all the reservations for the restaurant 
+                // Also remove all tables & reservations for the restaurant 
                 _context.Reservations.RemoveRange(_context.Reservations.Where(r => r.RestaurantID ==  restaurantID));
+                _context.Tables.RemoveRange(_context.Tables.Where(t => t.RestaurantID == restaurantID));
 
                 await SaveAndClearAsync();
 
             } catch (Exception) {
                 throw;
-            };
+            }
         }
 
         // Updates a restaurant 
         public async Task<Restaurant> UpdateRestaurantAsync(int restaurantID, Restaurant input) {
             try {
                 RestaurantEF oldRestaurant = await _context.Restaurants.Include(r => r.Tables).FirstOrDefaultAsync(r => r.RestaurantID == restaurantID);
+
+                if(oldRestaurant == null) {
+                    throw new RestaurantRepositoryException("No restaurant found to update. Insert the correct RestaurantID");
+                }
 
                 RestaurantEF updatedRestaurant = await RestaurantMapper.MapToData(input, _context);
 

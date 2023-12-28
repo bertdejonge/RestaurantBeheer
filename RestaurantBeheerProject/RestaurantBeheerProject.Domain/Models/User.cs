@@ -137,16 +137,16 @@ namespace RestaurantProject.Domain.Models
             bool isValidHouseNumber = string.IsNullOrWhiteSpace(HouseNumberLabel);
 
             if (!isValidStreet && !isValidHouseNumber) {
-                return $"User {Name}, in {Municipality}({ZipCode}). " +
+                return $"User {Name}, in {Municipality}({ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if (isValidStreet) {
-                return $"User {Name}, at {StreetName} ({Municipality}, {ZipCode}). " +
+                return $"User {Name}, at {StreetName} ({Municipality}, {ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if (isValidStreet && isValidHouseNumber) {
-                return $"User {Name}, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). " +
+                return $"User {Name}, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else {
-                return $"{Name}, in {Municipality}, {ZipCode}). " +
+                return $"{Name}, in {Municipality}, {ZipCode}). \n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             }
         }

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Interfaces {
     public interface IUserService {
+
+        Task<bool> ExistingUser(string phoneNumber, string email);
+
         // GET
         Task<User> GetUserByIdAsync(int id);
         

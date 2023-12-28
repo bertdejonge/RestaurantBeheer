@@ -8,6 +8,9 @@ namespace RestaurantProject.Datalayer.Mappers {
             Reservation domain = new(RestaurantMapper.MapToDomain(dataReservation.Restaurant, context), UserMapper.MapToDomain(dataReservation.User),
                                      dataReservation.PartySize, DateOnly.FromDateTime(dataReservation.DateAndStartTime.Date), TimeOnly.FromTimeSpan(dataReservation.DateAndStartTime.TimeOfDay));
 
+            domain.TableNumber = dataReservation.TableNumber;
+            domain.SetReservationId(dataReservation.ReservationID);
+
             return domain;
         }
 

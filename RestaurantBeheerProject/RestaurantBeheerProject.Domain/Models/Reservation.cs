@@ -107,6 +107,16 @@ namespace RestaurantProject.Domain.Models {
             return $"Reservation at {StartTime} for table No.{TableNumber}";
         }
 
+        public override bool Equals(object? obj) {
+            return obj is Reservation reservation &&
+                   EqualityComparer<Restaurant>.Default.Equals(Restaurant, reservation.Restaurant) &&
+                   EqualityComparer<User>.Default.Equals(User, reservation.User) &&
+                   PartySize == reservation.PartySize &&
+                   Date.Equals(reservation.Date) &&
+                   StartTime.Equals(reservation.StartTime) &&
+                   TableNumber == reservation.TableNumber;
+        }
+
         public Restaurant Restaurant1 {
             get => default;
             set {

@@ -47,14 +47,13 @@ namespace RestaurantProject.Datalayer.Repositories {
 
         public async Task<User> CreateUserAsync(User user) {
             try {
-
                 if (await ExistingUser(user.PhoneNumber, user.Email)) {
                     throw new UserRepositoryException($"A user with phone number {user.PhoneNumber} or email {user.Email} already exists");
                 }
-                var dataUser = UserMapper.MapToData(user, _context);
-                _context.Add(UserMapper.MapToData(user, _context));
+                var dataUser = await UserMapper.MapToData(user, _context);
+                _context.Add(dataUser);
                 await SaveAndClearAsync();
-                return UserMapper.MapToDomain(await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == user.PhoneNumber && u.Email == user.Email));
+                return UserMapper.MapToDomain(dataUser);
             } catch (Exception) {
 
                 throw;
@@ -90,10 +89,6 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // Equals overridden
                 if(oldUser.Equals(updatedUser)) {
                     throw new UserRepositoryException("Users are the same. No update required. ");
-                }
-
-                if(await ExistingUser(updatedUser.PhoneNumber, updatedUser.Email)) {
-                    throw new UserRepositoryException("The given phone number or email address are already registered for another user.");
                 }
 
                 oldUser.Name = updatedUser.Name;

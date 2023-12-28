@@ -73,5 +73,14 @@ namespace RestaurantProject.Domain.Managers {
                 throw new UserManagerException("Error in UpdateUserAsync: " + ex.Message);
             }
         }
+
+        public async Task<bool> ExistingUser(string phoneNumber, string email) {
+            try {
+                return await _repo.ExistingUser(phoneNumber, email);
+            } catch (Exception ex) {
+
+                throw new UserManagerException("Error in ExistingUser: " + ex.Message);
+            }
+        }
     }
 }

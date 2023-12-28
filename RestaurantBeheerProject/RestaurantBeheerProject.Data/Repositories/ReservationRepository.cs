@@ -27,8 +27,11 @@ namespace RestaurantProject.Datalayer.Repositories {
         }
 
         public async Task<bool> ExistingReservation(Reservation reservation) {
-            return await _context.Reservations.AnyAsync(r => r.RestaurantID == reservation.ReservationId && r.UserID == reservation.User.UserID 
-                            && DateOnly.FromDateTime(r.DateAndStartTime.Date) == reservation.Date);
+            // Convert to datetime to translate to SQL query
+            DateTime dt =  reservation.Date.ToDateTime(reservation.StartTime);
+
+            return await _context.Reservations.AnyAsync(r => r.RestaurantID == reservation.Restaurant.RestaurantID && r.UserID == reservation.User.UserID 
+                            && r.DateAndStartTime.Date == dt);
         }
 
         public async Task<Reservation> GetReservationByIDAsync(int reservationID) {
@@ -49,23 +52,28 @@ namespace RestaurantProject.Datalayer.Repositories {
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null) {
+        public async Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly optionalDate) {
             try {
                 List<Reservation> reservations = new();
+
+
+                DateTime dt = date.ToDateTime(new TimeOnly(00, 00, 00));
 
                 // If no second date given, search for only the first date
                 // Get all the reservations, include restaurant and user navigation props, 
                 // select only the ones for the specified date and map them to domain
-                if(optionalDate == null || optionalDate <= date) {
+                if (optionalDate == null || optionalDate <= date) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
-                                         .Include(r => r.User).Where(r => r.UserID == userID && DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
+                                         .Include(r => r.User).Where(r => r.UserID == userID && r.DateAndStartTime.Date == dt.Date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
-                } else {
+                } else if(optionalDate != null && optionalDate > date) {
                     // Same except date must be between the 2 values 
+                    DateTime optional = optionalDate.ToDateTime(new TimeOnly(00, 00, 00));
+
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User)
-                                         .Where(r => DateOnly.FromDateTime(r.DateAndStartTime.Date) >= date && DateOnly.FromDateTime(r.DateAndStartTime.Date) <= optionalDate)
+                                         .Where(r => r.DateAndStartTime.Date >= dt && r.DateAndStartTime.Date <= optional)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
                 }
@@ -162,10 +170,12 @@ namespace RestaurantProject.Datalayer.Repositories {
 
         }
 
-        public async Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
+        public async Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly optionalDate) {
             try {
 
                 List<Reservation> reservations = new();
+
+                DateTime dt = date.ToDateTime(new TimeOnly(00, 00, 00));
 
                 // If no second date given, search for only the first date
                 // Get all the reservations, include restaurant and user navigation props, 
@@ -173,17 +183,17 @@ namespace RestaurantProject.Datalayer.Repositories {
                 if (optionalDate == null || optionalDate <= date) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User)
-                                         .Where(r => r.RestaurantID == restaurantID && 
-                                               DateOnly.FromDateTime(r.DateAndStartTime.Date) == date)
+                                         .Where(r => r.RestaurantID == restaurantID && r.DateAndStartTime.Date == dt.Date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
-                } else {
+                } else if (optionalDate != null && optionalDate > date) {
+                    DateTime optional = optionalDate.ToDateTime(new TimeOnly(00, 00, 00));
                     // Same except date must be between the 2 values 
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User)
                                          .Where(r => r.RestaurantID == restaurantID 
-                                                && DateOnly.FromDateTime(r.DateAndStartTime.Date) >= date 
-                                                && DateOnly.FromDateTime(r.DateAndStartTime.Date) <= optionalDate)
+                                                && r.DateAndStartTime.Date >= dt 
+                                                &&r.DateAndStartTime.Date <= optional.Date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
                 }

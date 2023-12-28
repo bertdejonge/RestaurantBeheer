@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Managers {
-    public class ReservationManager : IReservationService{
+    public class ReservationManager : IReservationService {
 
         private IReservationRepository _repo;
 
@@ -35,26 +35,56 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null) {
+        public async Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly optionalDate) {
             try {
                 if (userID <= 0) {
                     throw new ReservationManagerException("UserID must be positive.");
                 }
 
-                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date < DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
                     throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
+                }
+
+                if(date >= optionalDate) {
+                    throw new ReservationManagerException("Invalid date range. Optional date must be bigger than the first");
+                }
+
+                if(optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                    throw new ReservationManagerException("Invalid optional date. Optional date must be between today and three months from now");
                 }
 
                 return await _repo.GetReservationsUserForDateOrRangeAsync(userID, date, optionalDate);
 
-            } catch (Exception ex) {
+            } catch (Exception) {
 
-                throw new ReservationManagerException("Error in GetReservationsRestaurantForDateAsync: " + ex);
+                throw;
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsForRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
-            return await _repo.GetReservationsRestaurantForDateOrRangeAsync(restaurantID, date, optionalDate);
+        public async Task<List<Reservation>> GetReservationsForRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly optionalDate) {
+            try {
+                if (restaurantID <= 0) {
+                    throw new ReservationManagerException("RestaurantID must be positive.");
+                }
+
+                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                    throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
+                }
+
+                if (date >= optionalDate) {
+                    throw new ReservationManagerException("Invalid date range. Optional date must be bigger than the first");
+                }
+
+                if (optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                    throw new ReservationManagerException("Invalid optional date. Optional date must be between today and three months from now");
+                }
+
+                return await _repo.GetReservationsRestaurantForDateOrRangeAsync(restaurantID, date, optionalDate);
+            } catch (Exception) {
+
+                throw;
+            }
+            
         }
 
 
@@ -94,7 +124,7 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null) {
+        public async Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly optionalDate) {
             try {
 
                 if (restaurantID <= 0) {

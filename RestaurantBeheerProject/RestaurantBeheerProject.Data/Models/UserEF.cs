@@ -34,7 +34,7 @@ namespace RestaurantProject.Datalayer.Models {
         [MaxLength(255)]
         public string? StreetName { get; set; }
 
-        [MaxLength(10)]
+        [MaxLength(50)]
         public string? HouseNumberLabel { get; set; }
 
         public override bool Equals(object? obj) {

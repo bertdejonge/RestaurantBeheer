@@ -43,7 +43,7 @@ namespace RestaurantProject.API.Mappers {
                 throw new MapToDomainException("invalid partysize.");
             }
 
-            if(input.Date < DateOnly.FromDateTime(DateTime.Now.Date) || input.Date < DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+            if(input.Date < DateOnly.FromDateTime(DateTime.Now.Date) || input.Date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
                 throw new MapToDomainException("Invalid date. Date must be between today and 3 months from now");
             }
 
@@ -61,8 +61,8 @@ namespace RestaurantProject.API.Mappers {
                                         input.Email, input.PhoneNumber, input.Tables.Select(t => MapToTableDomain(t)).ToList());
 
 
-            bool isValidStreet = string.IsNullOrWhiteSpace(input.StreetName);
-            bool isValidHouseNumber = string.IsNullOrWhiteSpace(input.HouseNumberLabel);
+            bool isValidStreet = !string.IsNullOrWhiteSpace(input.StreetName);
+            bool isValidHouseNumber = !string.IsNullOrWhiteSpace(input.HouseNumberLabel);
 
             // Always assign street if valid, but only assign valid housenumber if street is also valid
             if(isValidStreet && isValidHouseNumber) { 

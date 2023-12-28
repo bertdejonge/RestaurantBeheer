@@ -42,7 +42,6 @@ namespace RestaurantProject.Datalayer.Models {
 
         public override bool Equals(object? obj) {
             return obj is RestaurantEF eF &&
-                   RestaurantID == eF.RestaurantID &&
                    Name == eF.Name &&
                    Cuisine == eF.Cuisine &&
                    PhoneNumber == eF.PhoneNumber &&
@@ -50,8 +49,7 @@ namespace RestaurantProject.Datalayer.Models {
                    Municipality == eF.Municipality &&
                    ZipCode == eF.ZipCode &&
                    StreetName == eF.StreetName &&
-                   HouseNumberLabel == eF.HouseNumberLabel &&
-                   EqualityComparer<List<TableEF>>.Default.Equals(Tables, eF.Tables);
+                   HouseNumberLabel == eF.HouseNumberLabel;
         }
 
         public override string ToString() {

@@ -21,5 +21,6 @@ namespace RestaurantProject.Datalayer.Models {
         [ForeignKey("RestaurantID")]
         public int RestaurantID { get; set; }
 
+        public RestaurantEF restaurant { get; set; }
     }
 }

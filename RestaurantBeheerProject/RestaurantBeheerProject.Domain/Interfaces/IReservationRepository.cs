@@ -12,8 +12,8 @@ namespace RestaurantProject.Domain.Interfaces {
 
         // GET
         Task<Reservation> GetReservationByIDAsync(int reservationID);
-        Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly? optionalDate = null);
-        Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly? optionalDate = null);
+        Task<List<Reservation>> GetReservationsUserForDateOrRangeAsync(int userID, DateOnly date, DateOnly optionalDate);
+        Task<List<Reservation>> GetReservationsRestaurantForDateOrRangeAsync(int restaurantID, DateOnly date, DateOnly optionalDate);
 
         // POST
         Task<Reservation> CreateReservationAsync(Reservation reservation);            

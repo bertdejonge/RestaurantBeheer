@@ -28,25 +28,25 @@ namespace RestaurantProject.Domain.Managers {
                 }
             } catch (Exception ex) {
 
-                throw new RestaurantManagerException("Error in GetRestaurantByIdAsync: " + ex.Message);
+                throw new RestaurantManagerException("Error in GetRestaurantByIdAsync: \n" + ex.Message);
             }
         }
 
         public async Task<List<Restaurant>> GetAvailableRestaurantsForDateAsync(DateOnly date, int partySize) {
             try {
                 // Check if valid date
-                if (date < DateOnly.FromDateTime(DateTime.Now.Date) || date < DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3)) || partySize <= 0) {
-                    throw new RestaurantManagerException("Invalid date. ");
+                if (date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                    throw new RestaurantManagerException("Invalid date. Date must be between now and 3 months from now");
                 }
 
                 if (partySize <= 0) {
-                    throw new RestaurantManagerException("Invalid party size.");
+                    throw new RestaurantManagerException("Invalid party size. Must be bigger than 0.");
                 }
 
                 return await _repo.GetAvailableRestaurantsForDateAsync(date, partySize);
 
             } catch (Exception ex) {
-                throw new RestaurantManagerException("Error in GetAvailableRestaurantsForDateAsync: " + ex.Message);
+                throw new RestaurantManagerException("Error in GetAvailableRestaurantsForDateAsync: \n" + ex.Message);
             }
         }
 
@@ -55,14 +55,18 @@ namespace RestaurantProject.Domain.Managers {
                 bool isValidZip = false;
                 bool isValidCuisine = false;
 
-                if (zipCode >= 1000 && zipCode <= 9999) {
-                    isValidZip = true;
+                if (zipCode != null) {
+                    if (zipCode >= 1000 && zipCode <= 9999) {
+                        isValidZip = true;
+                    }
                 }
 
-                // Check if the given cuisine corresponds with a cuine type in the hardcoded list
-                if (CuisineType.IsInList(cuisine)) {
-                    isValidCuisine = true;
-                }
+                if (cuisine != null) {
+                    // Check if the given cuisine corresponds with a cuine type in the hardcoded list
+                    if (CuisineType.IsInList(cuisine)) {
+                        isValidCuisine = true;
+                    }
+                } 
 
                 if (!isValidCuisine && !isValidZip) {
                     throw new RestaurantManagerException("Zipcode and/or cuisine has to be filled in.");
@@ -72,7 +76,7 @@ namespace RestaurantProject.Domain.Managers {
 
             } catch (Exception ex) {
 
-                throw new RestaurantManagerException("Error in GetRestaurantsByZipAndCuisineAsync: " + ex.Message);
+                throw new RestaurantManagerException("Error in GetRestaurantsByZipAndCuisineAsync: \n" + ex.Message);
             }
         }
 
@@ -84,7 +88,7 @@ namespace RestaurantProject.Domain.Managers {
 
                 return await _repo.CreateRestaurantAsync(domainRestaurant);
             } catch (Exception ex) {
-                throw new RestaurantManagerException("Error in CreateRestaurantAsync: " + ex.Message);
+                throw new RestaurantManagerException("Error in CreateRestaurantAsync: \n" + ex.Message);
             }
         }
 
@@ -97,7 +101,7 @@ namespace RestaurantProject.Domain.Managers {
 
                 await _repo.RemoveRestaurantAsync(restaurantID);
             } catch (Exception ex) {
-                throw new RestaurantManagerException("Error is RemoveREstaurantAsync" + ex.Message);
+                throw new RestaurantManagerException("Error in RemoveRestaurantAsync: \n" + ex.Message);
             }
         }
 
@@ -109,7 +113,7 @@ namespace RestaurantProject.Domain.Managers {
 
                 return await _repo.UpdateRestaurantAsync(restaurantID, domainRestaurant);
             } catch(Exception ex) {
-                throw new RestaurantManagerException("Error is UpdateRestaurantAsync " + ex.Message);
+                throw new RestaurantManagerException("Error in UpdateRestaurantAsync: \n" + ex.Message);
             }
         }
 
