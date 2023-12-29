@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using RestaurantProject.API.Middleware;
 using RestaurantProject.Datalayer.Data;
 using RestaurantProject.Datalayer.Repositories;
 using RestaurantProject.Domain.Interfaces;
@@ -8,6 +9,10 @@ namespace RestaurantProject.API {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
 
             // Add services to the container.
             RestaurantDbContext context = new();
@@ -23,11 +28,15 @@ namespace RestaurantProject.API {
             builder.Services.AddSingleton<IUserRepository>(u => new UserRepository(context));
             builder.Services.AddSingleton<IUserService,UserManager>();
 
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
             var app = builder.Build();
+            ILogger logger = builder.Logging.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
@@ -35,8 +44,8 @@ namespace RestaurantProject.API {
                 app.UseSwaggerUI();
             }
 
+            app.UseLoggingMiddleware();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

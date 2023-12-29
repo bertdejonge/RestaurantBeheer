@@ -25,8 +25,9 @@ namespace RestaurantProject.Datalayer.Repositories {
             _context.ChangeTracker.Clear();
         }
 
-        public async Task<bool> ExistingUser(string phoneNumber, string email) {
-            return await _context.Users.AnyAsync(u => u.PhoneNumber == phoneNumber || u.Email == email);
+        public async Task<bool> ExistingUser(string name) {
+
+            return await _context.Users.AnyAsync(u => u.Name == name);
         }
 
         public async Task<User> GetUserByIdAsync(int id) {
@@ -47,8 +48,8 @@ namespace RestaurantProject.Datalayer.Repositories {
 
         public async Task<User> CreateUserAsync(User user) {
             try {
-                if (await ExistingUser(user.PhoneNumber, user.Email)) {
-                    throw new UserRepositoryException($"A user with phone number {user.PhoneNumber} or email {user.Email} already exists");
+                if (await ExistingUser(user.Name)) {
+                    throw new UserRepositoryException($"A user with name {user.Name}");
                 }
                 var dataUser = await UserMapper.MapToData(user, _context);
                 _context.Add(dataUser);
@@ -69,6 +70,7 @@ namespace RestaurantProject.Datalayer.Repositories {
                 }
 
                 _context.Remove(dataUser);
+                _context.Reservations.RemoveRange(_context.Reservations.Where(r => r.UserID == dataUser.UserID));
                 await SaveAndClearAsync();
             } catch (Exception) {
 
@@ -80,18 +82,13 @@ namespace RestaurantProject.Datalayer.Repositories {
             try {
                 UserEF oldUser = _context.Users.FirstOrDefault(u => u.UserID == userId);
 
-                if(oldUser == null) {
-                    throw new UserRepositoryException("User doesn't exist and thus can't be updated");
-                }
-
                 UserEF updatedUser = await UserMapper.MapToData(input, _context);
 
                 // Equals overridden
                 if(oldUser.Equals(updatedUser)) {
                     throw new UserRepositoryException("Users are the same. No update required. ");
-                }
+                } 
 
-                oldUser.Name = updatedUser.Name;
                 oldUser.Email = updatedUser.Email;
                 oldUser.PhoneNumber = updatedUser.PhoneNumber;
                 oldUser.Zipcode = updatedUser.Zipcode;

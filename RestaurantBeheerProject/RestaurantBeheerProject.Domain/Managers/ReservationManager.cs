@@ -40,17 +40,18 @@ namespace RestaurantProject.Domain.Managers {
                 if (userID <= 0) {
                     throw new ReservationManagerException("UserID must be positive.");
                 }
+                if (optionalDate == DateOnly.MinValue) {
+                    if (date == DateOnly.MinValue || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                        throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
+                    }
+                } else {
+                    if (optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                        throw new ReservationManagerException("Invalid optional date. Optional date must be between today and three months from now");
+                    }
 
-                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
-                    throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
-                }
-
-                if(date >= optionalDate) {
-                    throw new ReservationManagerException("Invalid date range. Optional date must be bigger than the first");
-                }
-
-                if(optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
-                    throw new ReservationManagerException("Invalid optional date. Optional date must be between today and three months from now");
+                    if (date >= optionalDate) {
+                        throw new ReservationManagerException("Invalid date range. Optional date must be bigger than the first");
+                    }
                 }
 
                 return await _repo.GetReservationsUserForDateOrRangeAsync(userID, date, optionalDate);
@@ -66,17 +67,18 @@ namespace RestaurantProject.Domain.Managers {
                 if (restaurantID <= 0) {
                     throw new ReservationManagerException("RestaurantID must be positive.");
                 }
+                if (optionalDate == DateOnly.MinValue) {
+                    if (date == DateOnly.MinValue || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                        throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
+                    }
+                } else {
+                    if (optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                        throw new ReservationManagerException("Invalid optional date. Optional date must be between today and three months from now");
+                    }
 
-                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
-                    throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
-                }
-
-                if (date >= optionalDate) {
-                    throw new ReservationManagerException("Invalid date range. Optional date must be bigger than the first");
-                }
-
-                if (optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
-                    throw new ReservationManagerException("Invalid optional date. Optional date must be between today and three months from now");
+                    if (date >= optionalDate) {
+                        throw new ReservationManagerException("Invalid date range. Optional date must be bigger than the first");
+                    }
                 }
 
                 return await _repo.GetReservationsRestaurantForDateOrRangeAsync(restaurantID, date, optionalDate);

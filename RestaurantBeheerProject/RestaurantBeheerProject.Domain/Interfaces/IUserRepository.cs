@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RestaurantProject.Domain.Interfaces {
     public interface IUserRepository {
-        Task<bool> ExistingUser(string phoneNumber, string email);
+        Task<bool> ExistingUser(string name);
         Task<User> GetUserByIdAsync(int id);
         Task<User> CreateUserAsync(User user);
         Task<User> UpdateUserAsync(int userID, User updatedUser);

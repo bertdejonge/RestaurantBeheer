@@ -144,12 +144,6 @@ namespace RestaurantProject.Datalayer.Repositories {
                                      .Include(t => t.Tables)
                                      .FirstOrDefaultAsync(i => i.RestaurantID == restaurantID);
 
-                // perform a null check
-                if (dataRestaurant == null) {
-                    throw new RestaurantRepositoryException($"No restaurant found with id {restaurantID}");
-                }
-
-                // If a restaurant was retrieved, that means that the restaurant exists, and thus can be removed
                 _context.Remove(dataRestaurant);
 
                 // Also remove all tables & reservations for the restaurant 

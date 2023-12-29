@@ -62,12 +62,12 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // If no second date given, search for only the first date
                 // Get all the reservations, include restaurant and user navigation props, 
                 // select only the ones for the specified date and map them to domain
-                if (optionalDate == null || optionalDate <= date) {
+                if (optionalDate == DateOnly.MinValue || optionalDate <= date) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User).Where(r => r.UserID == userID && r.DateAndStartTime.Date == dt.Date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
-                } else if(optionalDate != null && optionalDate > date) {
+                } else if(optionalDate != DateOnly.MinValue && optionalDate > date) {
                     // Same except date must be between the 2 values 
                     DateTime optional = optionalDate.ToDateTime(new TimeOnly(00, 00, 00));
 
@@ -180,13 +180,13 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // If no second date given, search for only the first date
                 // Get all the reservations, include restaurant and user navigation props, 
                 // select only the ones for the specified date and map them to domain
-                if (optionalDate == null || optionalDate <= date) {
+                if (optionalDate == DateOnly.MinValue || optionalDate <= date) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User)
                                          .Where(r => r.RestaurantID == restaurantID && r.DateAndStartTime.Date == dt.Date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
-                } else if (optionalDate != null && optionalDate > date) {
+                } else if (optionalDate != DateOnly.MinValue && optionalDate > date) {
                     DateTime optional = optionalDate.ToDateTime(new TimeOnly(00, 00, 00));
                     // Same except date must be between the 2 values 
                     reservations = await _context.Reservations.Include(r => r.Restaurant)

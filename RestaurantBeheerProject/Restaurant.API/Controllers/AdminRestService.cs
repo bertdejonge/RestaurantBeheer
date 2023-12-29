@@ -19,12 +19,14 @@ public class AdminRestService : Controller
     private readonly IReservationService _reservationService;
     private readonly RestaurantDbContext _context = new();
     private string route = "localhost:5138/api/AdminRestService/";
+    private readonly ILogger logger;
 
-    public AdminRestService(IUserService userService, IRestaurantService restaurantService, IReservationService reservationService)
+    public AdminRestService(IUserService userService, IRestaurantService restaurantService, IReservationService reservationService, ILoggerFactory loggerFactory)
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _restaurantService = restaurantService ?? throw new ArgumentNullException(nameof(restaurantService));
         _reservationService = reservationService ?? throw new ArgumentNullException(nameof(reservationService));
+        //this.logger = loggerFactory.AddFile("AdminRestLog.txt").CreateLogger("AdminRestLogger");
     }
 
     
@@ -110,9 +112,16 @@ public class AdminRestService : Controller
     {
         try
         {
-            await _restaurantService.RemoveRestaurantAsync(restaurantID);
-            return NoContent();
-
+            if (restaurantID > 0) {
+                if (await _restaurantService.GetRestaurantByIdAsync(restaurantID) != null) {
+                    await _restaurantService.RemoveRestaurantAsync(restaurantID);
+                    return NoContent();
+                } else {
+                    return NotFound($"No restaurant found with ID {restaurantID}");
+                }
+            } else {
+                return BadRequest("Invalid ID. Insert an ID bigger than 0.");
+            }
         }
         catch (Exception ex)
         {

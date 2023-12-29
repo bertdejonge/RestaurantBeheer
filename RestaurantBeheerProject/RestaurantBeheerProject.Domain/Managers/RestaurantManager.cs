@@ -94,11 +94,6 @@ namespace RestaurantProject.Domain.Managers {
 
         public async Task RemoveRestaurantAsync(int restaurantID) {
             try {
-                // First check the ID validity
-                if (restaurantID <= 0) {
-                    throw new RestaurantManagerException("Invalid id.");
-                }
-
                 await _repo.RemoveRestaurantAsync(restaurantID);
             } catch (Exception ex) {
                 throw new RestaurantManagerException("Error in RemoveRestaurantAsync: \n" + ex.Message);

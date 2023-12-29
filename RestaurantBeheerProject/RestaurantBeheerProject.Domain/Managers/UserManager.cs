@@ -74,9 +74,9 @@ namespace RestaurantProject.Domain.Managers {
             }
         }
 
-        public async Task<bool> ExistingUser(string phoneNumber, string email) {
+        public async Task<bool> ExistingUser(string name) {
             try {
-                return await _repo.ExistingUser(phoneNumber, email);
+                return await _repo.ExistingUser(name);
             } catch (Exception ex) {
 
                 throw new UserManagerException("Error in ExistingUser: " + ex.Message);

@@ -22,16 +22,18 @@ public class UserRestService : Controller
     private readonly IReservationService _reservationService;
     private readonly RestaurantDbContext _context = new();
     private string route = "localhost:5138/api/UserRestService/";
+    private readonly ILogger logger;
 
-    public UserRestService(IUserService userService, IRestaurantService restaurantService, IReservationService reservationService)
+    public UserRestService(IUserService userService, IRestaurantService restaurantService, IReservationService reservationService, ILoggerFactory loggerFactory)
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _restaurantService = restaurantService ?? throw new ArgumentNullException(nameof(restaurantService));
         _reservationService = reservationService ?? throw new ArgumentNullException(nameof(reservationService));
+        //this.logger = loggerFactory.AddFile("UserRestLog.txt").CreateLogger("UserRestLogger");
     }
 
     // USER
-    [HttpGet("users/{userId}", Name = "GetUserByID")]
+    [HttpGet("users/{userId}")]
     public async Task<ActionResult<UserOutputDTO>> GetUserByIdAsync(int userId)
     {
         try
@@ -76,13 +78,16 @@ public class UserRestService : Controller
     }
 
     [HttpPut("users/update/")]
-    public async Task<ActionResult<UserOutputDTO>> UpdateUserAsync(int userId, UserInputDTO input)
+    public async Task<ActionResult<UserOutputDTO>> UpdateUserAsync(int userId, UserUpdateInputDTO updateInput)
     {
         try
-        {
+        {  
+            // UpdateDTO object so that name can't be changed
+            UserInputDTO input = new() { Name = "update", Email = updateInput.Email, PhoneNumber = updateInput.PhoneNumber, Municipality = updateInput.Municipality, ZipCode = updateInput.ZipCode, StreetName = updateInput.StreetName, HousenumberLabel = updateInput.HousenumberLabel };
+            
             User mappedInput = MapToDomain.MapToUserDomain(input);
 
-            if (await _userService.ExistingUser(mappedInput.PhoneNumber, mappedInput.Email))
+            if (await _userService.GetUserByIdAsync(userId) != null)
             {
                 User updatedUser = await _userService.UpdateUserAsync(userId, mappedInput);
                 var updatedUserOutput = MapFromDomain.MapFromUserDomain(updatedUser);
@@ -90,9 +95,7 @@ public class UserRestService : Controller
             }
             else
             {
-                User newUser = await _userService.CreateUserAsync(mappedInput);
-                var userOutput = MapFromDomain.MapFromUserDomain(newUser);
-                return Created(route + $"users/adduser/{userOutput.Id}", userOutput);
+                return NotFound("No user found to update");
             }
 
 

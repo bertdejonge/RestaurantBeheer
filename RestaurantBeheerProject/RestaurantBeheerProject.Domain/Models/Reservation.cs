@@ -80,9 +80,12 @@ namespace RestaurantProject.Domain.Models {
         // Check controleren: in principe al gecontroleerd door een lijst met available hours te geven voor een bepaald restaurant
         private TimeOnly _startTime;
         public TimeOnly StartTime {
-            get { return _startTime; }
-            set { if ((value >= new TimeOnly(17, 00) && value <= new TimeOnly(22, 00)) && (value.Minute == 0 || value.Minute == 30)) {
-                    _startTime = value; }
+            get { return _startTime; }                          
+            set { if ((value >= new TimeOnly(17, 00) && value <= new TimeOnly(22, 00)) && (value.Minute == 0 || value.Minute == 30) && value > TimeOnly.FromDateTime(DateTime.Now)) {
+                    _startTime = value; 
+                } else {
+                    throw new ReservationException($"Invalid starttime. Starttime must be later than now ({DateTime.Now.TimeOfDay.ToString("HH:mm")}) and between 17h00 and 22h00.");
+                }
             }
         }
 
