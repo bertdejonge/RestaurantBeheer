@@ -9,6 +9,7 @@ namespace RestaurantProject.Domain.Interfaces {
     public interface IReservationRepository {
 
         Task<bool> ExistingReservation(Reservation reservation);
+        Task<bool> ExistingReservationByID(int reservationID);
 
         // GET
         Task<Reservation> GetReservationByIDAsync(int reservationID);

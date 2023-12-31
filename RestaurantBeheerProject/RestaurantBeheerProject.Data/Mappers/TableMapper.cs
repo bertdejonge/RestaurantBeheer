@@ -4,7 +4,7 @@ using RestaurantProject.Domain.Models;
 
 namespace RestaurantProject.Datalayer.Mappers {
     public class TableMapper {
-        public static Table MapToDomain(TableEF dataTable, RestaurantDbContext context) {
+        public static Table MapToDomain(TableEF dataTable, int restaurantID, RestaurantDbContext context) {
             Table domain = new(dataTable.TableNumber, dataTable.Seats);
 
             domain.TableID = dataTable.TableID;
@@ -14,7 +14,8 @@ namespace RestaurantProject.Datalayer.Mappers {
 
             // First get all the reservations for the table
             List<ReservationEF> reservationsForTable = context.Reservations
-                                                    .Where(r => r.Restaurant.Tables.Any(t => t.TableNumber == domain.TableNumber))
+                                                    .Where(r => r.RestaurantID == restaurantID && r.TableNumber == domain.TableNumber 
+                                                      && r.DateAndStartTime >= DateTime.Now.Date)
                                                     .ToList();
 
             // Then make a dictionary to get all the different reservation dates with their timeslots

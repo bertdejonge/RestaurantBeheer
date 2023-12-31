@@ -39,7 +39,7 @@ public class AdminRestService : Controller
 
             if (reservations.Count == 0)
             {
-                return BadRequest($"No reservations found for given date or range {date} - {optionalDate} ");
+                return NotFound($"No reservations found for given restaurant, date or range {date} - {optionalDate} ");
             }
 
             var reservationsOutput = reservations.Select(r => MapFromDomain.MapFromReservationDomain(r)).ToList();
@@ -89,7 +89,7 @@ public class AdminRestService : Controller
 
             Restaurant domainRestaurant = MapToDomain.MapToRestaurantDomain(inputDTO);
 
-            if (await _restaurantService.ExistingRestaurantAsync(domainRestaurant))
+            if (await _restaurantService.ExistsById(restaurantID)) 
             {
                 Restaurant updatedRestaurant = await _restaurantService.UpdateRestaurantAsync(restaurantID, domainRestaurant);
                 RestaurantOutputDTO restaurantOutput = MapFromDomain.MapFromRestaurantDomain(updatedRestaurant);
@@ -97,7 +97,7 @@ public class AdminRestService : Controller
             }
             else
             {
-                return BadRequest("No restaurant found to update");
+                return NotFound("No restaurant found to update");
             }
 
         }

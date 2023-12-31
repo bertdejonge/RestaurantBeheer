@@ -133,11 +133,26 @@ namespace RestaurantProject.Domain.Managers {
                     throw new ReservationManagerException("RestaurantID must be positive.");
                 }
 
-                if (date == null || date < DateOnly.FromDateTime(DateTime.Now.Date) || date < DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                if (date == DateOnly.MinValue || date < DateOnly.FromDateTime(DateTime.Now.Date) || date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
                     throw new ReservationManagerException("Invalid date. Date must be between today and three months from now");
                 }
 
+                if(optionalDate != DateOnly.MinValue) {
+                    if(optionalDate < date || optionalDate > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+                        throw new ReservationManagerException("Optional date must be bigger than first date and max three months from now.");
+                    }
+                }
+
                 return await _repo.GetReservationsRestaurantForDateOrRangeAsync(restaurantID, date, optionalDate);
+            } catch (Exception) {
+
+                throw;
+            }
+        }
+
+        public async Task<bool> ExistingReservationByID(int reservationID) {
+            try {
+                return await _repo.ExistingReservationByID(reservationID);
             } catch (Exception) {
 
                 throw;

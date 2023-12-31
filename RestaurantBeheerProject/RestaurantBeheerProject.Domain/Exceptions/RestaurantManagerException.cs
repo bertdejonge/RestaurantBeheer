@@ -3,7 +3,7 @@
 namespace RestaurantProject.Domain.Exceptions
 {
     [Serializable]
-    internal class RestaurantManagerException : Exception
+    public class RestaurantManagerException : Exception
     {
         public RestaurantManagerException()
         {

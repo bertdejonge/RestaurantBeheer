@@ -17,15 +17,26 @@ namespace RestaurantProject.Datalayer.Mappers {
         public async static Task<ReservationEF> MapToData(Reservation domainReservation, RestaurantDbContext context) {
             DateTime date = domainReservation.Date.ToDateTime(domainReservation.StartTime);
 
-            ReservationEF dataReservation = new() {
-                Restaurant = await RestaurantMapper.MapToData(domainReservation.Restaurant, context),
-                User = await UserMapper.MapToData(domainReservation.User, context),
-                PartySize = domainReservation.PartySize,
-                DateAndStartTime = date,
-                TableNumber = domainReservation.TableNumber
-            };
+            if (domainReservation.ReservationId == 0) {               
 
-            return dataReservation;
+                ReservationEF dataReservation = new() {
+                    Restaurant = await RestaurantMapper.MapToData(domainReservation.Restaurant, context),
+                    User = await UserMapper.MapToData(domainReservation.User, context),
+                    PartySize = domainReservation.PartySize,
+                    DateAndStartTime = date,
+                    TableNumber = domainReservation.TableNumber
+                };
+
+                return dataReservation;
+            } else {
+                ReservationEF reservation = context.Reservations.FirstOrDefault(r => r.ReservationID == domainReservation.ReservationId);
+
+                reservation.RestaurantID = domainReservation.Restaurant.RestaurantID;
+                reservation.UserID = domainReservation.User.UserID;
+                reservation.PartySize = domainReservation.PartySize;
+                reservation.DateAndStartTime = date;
+                return reservation;
+            }
         }
     }
 }

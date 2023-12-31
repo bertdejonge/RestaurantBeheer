@@ -47,7 +47,7 @@ namespace RestaurantProject.Domain.Models
         public int ZipCode {
             get { return _zipCode; }
             set {
-                if (value > 0 && value < 9999) {
+                if (value >= 1000 && value <= 9999) {
                     _zipCode = value;
                 } else {
                     throw new UserException("Invalid zip code. Please insert a valid zipcode between 0 and 9999.");
@@ -137,18 +137,27 @@ namespace RestaurantProject.Domain.Models
             bool isValidHouseNumber = string.IsNullOrWhiteSpace(HouseNumberLabel);
 
             if (!isValidStreet && !isValidHouseNumber) {
-                return $"User {Name}, in {Municipality}({ZipCode}). \n" +
+                return $"User {Name}, in {Municipality}({ZipCode}). " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if (isValidStreet) {
-                return $"User {Name}, at {StreetName} ({Municipality}, {ZipCode}). \n" +
+                return $"User {Name}, at {StreetName} ({Municipality}, {ZipCode}). " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if (isValidStreet && isValidHouseNumber) {
-                return $"User {Name}, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). \n" +
+                return $"User {Name}, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}).n" +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else {
-                return $"{Name}, in {Municipality}, {ZipCode}). \n" +
+                return $"{Name}, in {Municipality}, {ZipCode}). " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             }
+        }
+
+        public override bool Equals(object? obj) {
+            return obj is User user &&
+                   Name == user.Name &&
+                   ZipCode == user.ZipCode &&
+                   Municipality == user.Municipality &&
+                   Email == user.Email &&
+                   PhoneNumber == user.PhoneNumber;
         }
     }
 }

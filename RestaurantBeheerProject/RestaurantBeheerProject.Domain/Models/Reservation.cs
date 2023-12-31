@@ -81,7 +81,7 @@ namespace RestaurantProject.Domain.Models {
         private TimeOnly _startTime;
         public TimeOnly StartTime {
             get { return _startTime; }                          
-            set { if ((value >= new TimeOnly(17, 00) && value <= new TimeOnly(22, 00)) && (value.Minute == 0 || value.Minute == 30) && value > TimeOnly.FromDateTime(DateTime.Now)) {
+            set { if ((value >= new TimeOnly(17, 00) && value < new TimeOnly(22, 00)) && (value.Minute == 0 || value.Minute == 30) && value > TimeOnly.FromDateTime(DateTime.Now)) {
                     _startTime = value; 
                 } else {
                     throw new ReservationException($"Invalid starttime. Starttime must be later than now ({DateTime.Now.TimeOfDay.ToString("HH:mm")}) and between 17h00 and 22h00.");
@@ -110,14 +110,12 @@ namespace RestaurantProject.Domain.Models {
             return $"Reservation at {StartTime} for table No.{TableNumber}";
         }
 
-        public override bool Equals(object? obj) {
-            return obj is Reservation reservation &&
-                   EqualityComparer<Restaurant>.Default.Equals(Restaurant, reservation.Restaurant) &&
-                   EqualityComparer<User>.Default.Equals(User, reservation.User) &&
-                   PartySize == reservation.PartySize &&
-                   Date.Equals(reservation.Date) &&
-                   StartTime.Equals(reservation.StartTime) &&
-                   TableNumber == reservation.TableNumber;
+        public bool Equals(Reservation reservation) {
+            if(this.Date == reservation.Date && this.User.Equals(reservation.User) 
+                && this.Restaurant.Equals(reservation.Restaurant) && this.PartySize == reservation.PartySize 
+                && this.StartTime == reservation.StartTime) {
+                return true;
+            } return false;
         }
 
         public Restaurant Restaurant1 {

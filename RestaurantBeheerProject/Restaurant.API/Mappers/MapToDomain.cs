@@ -43,12 +43,14 @@ namespace RestaurantProject.API.Mappers {
                 throw new MapToDomainException("invalid partysize.");
             }
 
-            if(input.Date < DateOnly.FromDateTime(DateTime.Now.Date) || input.Date > DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
+            if(input.Date <= DateOnly.FromDateTime(DateTime.Now.Date) || input.Date >= DateOnly.FromDateTime(DateTime.Now.Date.AddMonths(3))) {
                 throw new MapToDomainException("Invalid date. Date must be between today and 3 months from now");
             }
 
-            if(input.StartTime < new TimeOnly(17,00) || input.StartTime > new TimeOnly(22, 00)) {
-                throw new MapToDomainException("Invalid starttime. Starttime must be between 17h00 and 22h00");
+            
+
+            if(input.StartTime < new TimeOnly(17,00) || input.StartTime > new TimeOnly(21, 30)) {
+                throw new MapToDomainException("Invalid starttime. Starttime are from  17h00 until 21h30 (included)");
             }
             
             Reservation domainReservation = new(domainResto, domainUser, input.PartySize, input.Date, input.StartTime);

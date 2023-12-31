@@ -9,6 +9,7 @@ namespace RestaurantProject.Domain.Interfaces {
     public interface IRestaurantService {
 
         Task<bool> ExistingRestaurantAsync(Restaurant domainRestaurant);
+        Task<bool> ExistsById(int restaurantID);
 
         // GET
         Task<Restaurant> GetRestaurantByIdAsync(int id);

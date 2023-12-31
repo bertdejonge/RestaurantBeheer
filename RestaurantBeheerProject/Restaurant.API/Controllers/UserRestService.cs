@@ -215,6 +215,7 @@ public class UserRestService : Controller
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return BadRequest("Error in CreateReservationAsync: " + ex.Message);
         }
     }
@@ -226,7 +227,7 @@ public class UserRestService : Controller
         {
             Reservation domainReservation = MapToDomain.MapToReservationDomain(input, _context);
 
-            if (await _reservationService.ExistingReservation(domainReservation))
+            if (await _reservationService.ExistingReservationByID(reservationID))
             {
                 Reservation updatedReservation = await _reservationService.UpdateReservationAsync(reservationID, domainReservation);
                 var updatedReservationOutput = MapFromDomain.MapFromReservationDomain(updatedReservation);
@@ -234,9 +235,7 @@ public class UserRestService : Controller
             }
             else
             {
-                Reservation newReservation = await _reservationService.CreateReservationAsync(domainReservation);
-                ReservationOutputDTO reservationOutput = MapFromDomain.MapFromReservationDomain(newReservation);
-                return Created(route + $"reservations/addreservation/{reservationOutput.ReservationID}", reservationOutput);
+                return NotFound("No reservation found to update");
             }
 
         }
@@ -251,21 +250,29 @@ public class UserRestService : Controller
     {
         try
         {
-            var reservation = await _reservationService.GetReservationByIDAsync(reservationID);
 
-            if (reservation.Date < DateOnly.FromDateTime(DateTime.Now.Date))
-            {
-                return BadRequest("Can't delete a reservation that has passed. ");
-            }
-            else if (reservation.Date == DateOnly.FromDateTime(DateTime.Now.Date)
-                && reservation.StartTime < TimeOnly.FromTimeSpan(DateTime.Now.TimeOfDay).AddHours(2))
-            { // min 2h in adv.
-                return BadRequest("Can't delete a reservation that takes place in the upcoming 2 hours. ");
-            }
-            else
-            {
-                await _reservationService.CancelReservationAsync(reservationID);
-                return NoContent();
+            TimeOnly curTime = TimeOnly.FromTimeSpan(DateTime.Now.TimeOfDay);
+            DateOnly curDate = DateOnly.FromDateTime(DateTime.Now.Date);
+
+            var reservation = await _reservationService.GetReservationByIDAsync(reservationID);
+                   
+            if (reservation != null) {
+                // Date < today OR date == today && time < curtime
+                if (reservation.Date < curDate || (reservation.Date == curDate && reservation.StartTime < curTime)) {
+                    return BadRequest("Can't delete a reservation that has passed. ");
+                } 
+                
+                // Date = today, starttime < 2h from curtime
+                else if (reservation.Date == curDate && reservation.StartTime < curTime.AddHours(2)) {
+                    return BadRequest("Can't delete a reservation that takes place in the upcoming 2 hours. ");
+                } 
+                
+                else {
+                    await _reservationService.CancelReservationAsync(reservationID);
+                    return NoContent();
+                }
+            } else {
+                return NotFound("No reservation found to delete");
             }
         }
         catch (Exception ex)

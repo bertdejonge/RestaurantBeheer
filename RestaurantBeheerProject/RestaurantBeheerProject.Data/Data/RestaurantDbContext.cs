@@ -17,11 +17,10 @@ namespace RestaurantProject.Datalayer.Data {
         public DbSet<UserEF> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            optionsBuilder.UseSqlServer(@"Data Source=HP_BERT\SQLEXPRESS;Initial Catalog=Restaurant_Db;Integrated Security=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer(@"Data Source=HP_BERT\SQLEXPRESS;Initial Catalog=Restaurant_Db;Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
         }
-
     }
 }

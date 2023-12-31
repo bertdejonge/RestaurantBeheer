@@ -59,7 +59,7 @@ namespace RestaurantProject.Domain.Models {
 		// F.e. booking at 17.00 needs slots 17.00, 17.30 and 18.00
 		// 18.30 can still be booked for the next party
 		public bool IsAvailableForStartTime(DateOnly date, TimeOnly reservationTime) {
-			if (reservationTime <= new TimeOnly(22, 0) || reservationTime >= new TimeOnly(17, 30)) {
+			if (reservationTime < new TimeOnly(22, 0) || reservationTime >= new TimeOnly(17, 00)) {
 				if (DateToReservationHours.TryGetValue(date, out List<TimeOnly> availableHours)) {
 					if (availableHours.Contains(reservationTime) && availableHours.Contains(reservationTime.AddMinutes(30))
 						&& availableHours.Contains(reservationTime.AddMinutes(30))) {

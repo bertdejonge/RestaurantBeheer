@@ -206,19 +206,31 @@ namespace RestaurantProject.Domain.Models
             bool isValidHouseNumber = string.IsNullOrWhiteSpace(HouseNumberLabel);
 
             if (!isValidStreet && !isValidHouseNumber) {
-                return $"{Name}, {Cuisine} cuisine, in {Municipality}({ZipCode}). \n" +
+                return $"{Name}, {Cuisine} cuisine, in {Municipality}({ZipCode}). " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if(isValidStreet) {
-                return $"{Name}, {Cuisine} cuisine, at {StreetName} ({Municipality}, {ZipCode}). \n" +
+                return $"{Name}, {Cuisine} cuisine, at {StreetName} ({Municipality}, {ZipCode}). " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             } else if(isValidStreet && isValidHouseNumber) {
-                return $"{Name}, {Cuisine} cuisine, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}). \n " +
+                return $"{Name}, {Cuisine} cuisine, at {StreetName} {HouseNumberLabel} ({Municipality}, {ZipCode}).  " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             }else {
-                return $"{Name}, {Cuisine} cuisine, in {Municipality}, {ZipCode}). \n" +
+                return $"{Name}, {Cuisine} cuisine, in {Municipality}, {ZipCode}). " +
                        $"ContactInfo: {Email}, {PhoneNumber}";
             }
         }
+
+        public override bool Equals(object? obj) {
+            return obj is Restaurant restaurant &&
+                   Name == restaurant.Name &&
+                   ZipCode == restaurant.ZipCode &&
+                   Municipality == restaurant.Municipality &&
+                   Cuisine == restaurant.Cuisine &&
+                   Email == restaurant.Email &&
+                   PhoneNumber == restaurant.PhoneNumber;
+        }
+
+
 
 
 

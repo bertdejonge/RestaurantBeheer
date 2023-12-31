@@ -23,5 +23,6 @@ namespace RestaurantProject.Domain.Interfaces {
 
         // DELETE
         Task RemoveRestaurantAsync(int restaurantID);
+        Task<bool> ExistingRestaurantByIdAsync(int restaurantID);
     }
 }

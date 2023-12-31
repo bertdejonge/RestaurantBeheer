@@ -34,6 +34,10 @@ namespace RestaurantProject.Datalayer.Repositories {
                             && r.DateAndStartTime.Date == dt);
         }
 
+        public async Task<bool> ExistingReservationByID(int reservationID) {
+            return await _context.Reservations.AnyAsync(r => r.ReservationID == reservationID);
+        }
+
         public async Task<Reservation> GetReservationByIDAsync(int reservationID) {
             try {
                 var dataReservation = await _context.Reservations.Include(r => r.Restaurant)
@@ -62,7 +66,7 @@ namespace RestaurantProject.Datalayer.Repositories {
                 // If no second date given, search for only the first date
                 // Get all the reservations, include restaurant and user navigation props, 
                 // select only the ones for the specified date and map them to domain
-                if (optionalDate == DateOnly.MinValue || optionalDate <= date) {
+                if (optionalDate == DateOnly.MinValue) {
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User).Where(r => r.UserID == userID && r.DateAndStartTime.Date == dt.Date)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
@@ -73,7 +77,7 @@ namespace RestaurantProject.Datalayer.Repositories {
 
                     reservations = await _context.Reservations.Include(r => r.Restaurant)
                                          .Include(r => r.User)
-                                         .Where(r => r.DateAndStartTime.Date >= dt && r.DateAndStartTime.Date <= optional)
+                                         .Where(r => r.UserID == userID && r.DateAndStartTime.Date >= dt && r.DateAndStartTime.Date <= optional)
                                          .Select(r => ReservationMapper.MapToDomain(r, _context))
                                          .ToListAsync();
                 }
@@ -128,7 +132,11 @@ namespace RestaurantProject.Datalayer.Repositories {
         public async Task<Reservation> UpdateReservationAsync(int reservationID, Reservation input) {
             try {
                 // Check if exists
-                var existingReservation = await _context.Reservations.FirstOrDefaultAsync(r => r.ReservationID == reservationID);
+                var existingReservation = await _context.Reservations
+                                                .Include(r => r.Restaurant)
+                                                    .ThenInclude(resto => resto.Tables)
+                                                .Include(r => r.User)
+                                                .FirstOrDefaultAsync(r => r.ReservationID == reservationID);
 
                 var existingReservationDomain = ReservationMapper.MapToDomain(existingReservation, _context);
 

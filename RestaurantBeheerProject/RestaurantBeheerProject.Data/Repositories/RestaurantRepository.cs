@@ -34,6 +34,10 @@ namespace RestaurantProject.Datalayer.Repositories {
             return await _context.Restaurants.AnyAsync(r => r.ZipCode == zipCode && r.Name == name && r.Cuisine == cuisine);
         }
 
+        public async Task<bool> ExistingRestaurantByIdAsync(int restaurantID) {
+            return await _context.Restaurants.AnyAsync(r => r.RestaurantID == restaurantID);
+        }
+
         // Get restaurant by ID
         public async Task<Restaurant> GetRestaurantByIdAsync(int id) {
             try {               
@@ -189,6 +193,8 @@ namespace RestaurantProject.Datalayer.Repositories {
                 throw;
             }
         }
+
+        
     }
 }
 

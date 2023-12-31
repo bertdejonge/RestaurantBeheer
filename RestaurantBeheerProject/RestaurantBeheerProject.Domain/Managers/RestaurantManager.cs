@@ -115,5 +115,9 @@ namespace RestaurantProject.Domain.Managers {
         public async Task<bool> ExistingRestaurantAsync(Restaurant domainRestaurant) {
             return await _repo.ExistingRestaurantAsync(domainRestaurant.ZipCode, domainRestaurant.Name, domainRestaurant.Cuisine);
         }
+
+        public async Task<bool> ExistsById(int restaurantID) {
+            return await _repo.ExistingRestaurantByIdAsync(restaurantID);
+        }
     }
 }

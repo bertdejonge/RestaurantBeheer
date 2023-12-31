@@ -27,7 +27,7 @@ namespace RestaurantProject.Datalayer.Mappers {
 
             // Populate the domainTables
             foreach(TableEF table in dataRestaurant.Tables) { 
-                domainResto.Tables.Add(TableMapper.MapToDomain(table, context)); 
+                domainResto.Tables.Add(TableMapper.MapToDomain(table, dataRestaurant.RestaurantID, context)); 
             }
 
             if(!string.IsNullOrWhiteSpace(dataRestaurant.StreetName)) {

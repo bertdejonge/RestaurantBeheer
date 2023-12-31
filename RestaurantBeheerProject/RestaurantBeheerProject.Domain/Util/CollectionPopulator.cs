@@ -18,8 +18,8 @@ namespace RestaurantProject.Domain.Util
                 List<TimeOnly> times = new();
 
                 // Make the start value
-                TimeOnly startTime = new TimeOnly(17, 30);
-                TimeOnly endTime = new TimeOnly(22, 01);
+                TimeOnly startTime = new TimeOnly(17, 00);
+                TimeOnly endTime = new TimeOnly(22, 00);
 
                 // Add the time to the list and increment by 30 minutes
                 while (startTime <= endTime) {
